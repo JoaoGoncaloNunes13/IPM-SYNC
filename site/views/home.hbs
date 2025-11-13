@@ -1,0 +1,95 @@
+<div class="home-page">
+
+    <aside class="sidebar">
+        <h2>Projetos</h2>
+        <ul class="project-list">
+            {{#each projects}}
+                <li class="project-bubble" title="{{this.name}}" onclick="openProject({{this.id}})">
+                    <span>{{this.initial}}</span>
+                </li>
+            {{/each}}
+            <li class="project-bubble new-project" onclick="createNewProject()" title="Criar novo projeto">+</li>
+        </ul>
+
+
+    </aside>
+    {{> createServer}}
+    <script src="/js/createServer.mjs"></script>
+    <script>
+        function showProjectName(name) {
+            alert("Projeto selecionado: " + name);
+        }
+        function openProject(projectId) {
+            window.location.href = `/projects/${projectId}`;
+        }
+        function createNewProject() {
+            const form = document.getElementById("createServerForm");
+            form.style.display = form.style.display === "none" ? "block" : "none";
+        }
+    </script>
+
+
+    <!-- Conteúdo central -->
+    <main class="main-content">
+        <section class="calendar-container">
+            <h2>Calendário</h2>
+            <div class="calendar-grid">
+                {{#each calendarDays}}
+                    <div class="calendar-day" onclick="showEvents('{{this.date}}')">
+                        <span class="day-number">{{this.day}}</span>
+                    </div>
+                {{/each}}
+            </div>
+        </section>
+
+        <script>
+            function showEvents(date) {
+                alert("Eventos do dia " + date);
+                // Aqui podes abrir popup com lista de eventos reais
+            }
+        </script>
+
+        <!-- Topo: calendário / próximas tarefas -->
+        <section class="calendar">
+            <h2>Próximos Eventos</h2>
+            <ul class="events-list">
+                {{#each upcomingEvents}}
+                    <li>
+                        <strong>{{this.title}}</strong> - {{this.date}} ({{this.type}})
+                    </li>
+                {{/each}}
+            </ul>
+        </section>
+
+        <!-- Sessões de estudo -->
+        <section class="study-sessions">
+            <h2>Adicionar Sessão de Estudo</h2>
+            <form id="studySessionForm" action="/createStudySession" method="POST">
+                <input type="text" name="title" placeholder="Título da Sessão" required>
+                <input type="date" name="date" required>
+                <input type="time" name="time">
+                <input type="number" name="duration" placeholder="Duração (minutos)">
+                <button type="submit">Criar Sessão</button>
+            </form>
+        </section>
+
+        <!-- Mensagens rápidas / chat -->
+        <section class="quick-chat">
+            <h2>Chat Rápido</h2>
+            <div class="chat-box">
+                {{#each recentMessages}}
+                    <div class="message">
+                        <strong>{{this.user}}</strong>: {{this.content}}
+                    </div>
+                {{/each}}
+            </div>
+            <form id="chatForm" action="/sendMessage" method="POST">
+                <input type="text" name="message" placeholder="Escreve aqui..." required>
+                <button type="submit">Enviar</button>
+            </form>
+        </section>
+
+    </main>
+
+</div>
+

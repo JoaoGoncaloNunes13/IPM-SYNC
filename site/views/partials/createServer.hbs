@@ -1,0 +1,66 @@
+<form id="createServerForm" style="display: none">
+    <h3>Criar Novo Servidor</h3>
+
+    <label>Nome do servidor:</label>
+    <input type="text" id="serverName" required />
+
+    <label>Owner (ID do dono):</label>
+    <select id="ownerId">
+        <option value="1">Ricardo</option>
+        <option value="2">Maria</option>
+        <option value="3">João</option>
+    </select>
+
+    <label>Membros iniciais:</label>
+    <select id="members" multiple>
+        <option value="1">Ricardo</option>
+        <option value="2">Maria</option>
+        <option value="3">João</option>
+    </select>
+
+    <label>Canais iniciais:</label>
+    <input type="checkbox" id="texto" checked /> Texto
+    <input type="checkbox" id="grupos" checked /> Grupos
+    <input type="checkbox" id="tarefas" checked /> Tarefas
+    <input type="checkbox" id="calendario" checked /> Calendário
+
+    <button type="submit">Criar Servidor</button>
+</form>
+
+<script>
+    const servers = [];
+
+    document.getElementById("createServerForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        const serverName = document.getElementById("serverName").value;
+        const ownerId = parseInt(document.getElementById("ownerId").value);
+
+        const membersSelect = document.getElementById("members");
+        const members = Array.from(membersSelect.selectedOptions).map(opt => parseInt(opt.value));
+
+        const channels = {
+            texto: document.getElementById("texto").checked ? [] : null,
+            grupos: document.getElementById("grupos").checked ? [] : null,
+            tarefas: document.getElementById("tarefas").checked ? [] : null,
+            calendario: document.getElementById("calendario").checked ? [] : null,
+        };
+
+        const newServer = {
+            id: servers.length + 1,
+            name: serverName,
+            ownerId: ownerId,
+            members: members,
+            channels: channels,
+        };
+
+        servers.push(newServer);
+
+        alert("Servidor criado: " + serverName);
+        console.log("Servidores:", servers);
+
+        // Aqui podes enviar via fetch/post para o backend
+
+        this.reset(); // limpa o formulário
+    });
+</script>

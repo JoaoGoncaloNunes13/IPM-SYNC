@@ -1,21 +1,29 @@
-import { randomUUID } from 'crypto'  
+import { randomUUID } from 'crypto'
+const calendarDays = [];
+const today = new Date();
+const year = today.getFullYear();
+const month = today.getMonth();
 
-let users = [];
-let servers = [];
+const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+for (let i = 1; i <= daysInMonth; i++) {
+    calendarDays.push({ day: i, date: `${year}-${month+1}-${i}` });
+}
+
+export let users = [];
+export let servers = [];
 
 export function initializeData() {
-  if (users.length > 0 || servers.length > 0) return; // evita duplicar dados
+  if (users.length > 0 || servers.length > 0) return;
 
-  // Criar 5 utilizadores
   users = [
     { id: randomUUID(), name: "João Nunes", email: "joao@sync.com", password: "1234" },
     { id: randomUUID(), name: "Madalena Alves", email: "madalena@sync.com" , password: "1234"  },
     { id: randomUUID(), name: "Pedro Peres", email: "pedro@sync.com" , password: "1234" },
     { id: randomUUID(), name: "Ricardo Oliveira", email: "ricardo@sync.com", password: "1234"  },
-    { id: randomUUID(), name: "Professor Teresa", email: "teresa@sync.com" , password: "1234" },
+    { id: randomUUID(), name: "Professora Teresa", email: "teresa@sync.com" , password: "1234" },
   ];
 
-  // Criar 2 servidores, com o 1º e 2º user como criadores
   servers = [
     {
       id: 0,
@@ -85,7 +93,7 @@ export async function addUserToServer(userId, serverId) {
 
 export async function createServer(name, ownerId) {
   const newServer = {
-    id: servers.length, // id sequencial
+    id: servers.length,
     name,
     ownerId,
     channels: {
@@ -170,4 +178,10 @@ export async function createReminder(userId, title, date) {
   const reminder = { id: user.calendar.length, title, date, type: "lembrete" };
   user.calendar.push(reminder);
   return reminder;
+}
+
+export async function loginUser(email, password) {
+    const user = users.find(u => u.email === email && u.password === password);
+    if (!user) throw new Error("Credenciais inválidas");
+    return user;
 }

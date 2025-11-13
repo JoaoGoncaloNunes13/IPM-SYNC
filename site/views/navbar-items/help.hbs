@@ -1,0 +1,42 @@
+{{!< main }}
+
+<div class="help-container">
+    <h1>Precisas de ajuda?</h1>
+    <p>Clica no botão abaixo para nos enviar a tua mensagem e iremos responder o mais rápido possível.</p>
+
+    <!-- Botão para abrir o modal -->
+    <button id="helpBtn">Enviar mensagem de ajuda</button>
+</div>
+
+<!-- Modal de ajuda -->
+<div id="helpModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Mensagem de Ajuda</h2>
+        <form action="/sendHelp" method="POST">
+            <textarea name="message" placeholder="Escreve a tua dúvida ou problema..." required></textarea>
+            <button type="submit">Enviar</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Script simples para abrir e fechar o modal
+    const modal = document.getElementById("helpModal");
+    const btn = document.getElementById("helpBtn");
+    const span = document.querySelector("#helpModal .close");
+
+    btn.onclick = function() {
+        modal.style.display = "block";
+    }
+
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>

@@ -17,9 +17,7 @@ export default function(Data) {
         createChannel: createChannel,
         getChannels: getChannels,
         sendMessage: sendMessage,
-        //getMessages: getMessages,
-        //createStudySession: createStudySession,
-        //createReminder: createReminder
+
 
     }
 

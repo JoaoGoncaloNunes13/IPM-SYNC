@@ -1,0 +1,419 @@
+/* ================== GLOBAL ================== */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #f4f6f8;
+    color: #333;
+}
+
+/* ================== NAVBAR ================== */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 50px;
+    background-color: #2a6df4;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.navbar a {
+    color: white;
+    text-decoration: none;
+    margin-left: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+.navbar a:hover {
+    color: #ffdd57;
+}
+
+/* ================== MODAL ================== */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+}
+.modal-content {
+    background-color: white;
+    margin: 10% auto;
+    padding: 30px;
+    border-radius: 10px;
+    width: 300px;
+    text-align: center;
+    position: relative;
+}
+.close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 22px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.modal input {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+.modal button {
+    padding: 10px 20px;
+    background-color: #2a6df4;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.modal button:hover {
+    background-color: #1a4bb8;
+}
+.modal a {
+    display: block;
+    margin-top: 10px;
+    color: #2a6df4;
+    text-decoration: none;
+    font-size: 14px;
+}
+.modal a:hover {
+    text-decoration: underline;
+}
+
+/* ================== HOME LAYOUT ================== */
+.home-page {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* ------------------ SIDEBAR ------------------ */
+.sidebar {
+    width: 150px; /* Aumentei de 80px para 150px */
+    background-color: #1e1e2f;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 0;
+    gap: 25px;
+}
+.sidebar h2 {
+    color: #1a73e8; /* Azul brilhante */
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+
+/* Lista de projetos */
+.project-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%; /* Preenche a largura da sidebar */
+    align-items: center;
+}
+
+.project-bubble {
+    width: 70px; /* Aumentei de 50px para 70px */
+    height: 70px; /* Aumentei de 50px para 70px */
+    border-radius: 50%;
+    background-color: #3a3a5e;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-weight: bold;
+    transition: transform 0.2s, background-color 0.2s;
+    font-size: 16px; /* Texto maior dentro da bolinha */
+}
+.project-bubble:hover {
+    background-color: #1a73e8;
+    transform: scale(1.1);
+}
+.project-bubble.new-project {
+    background-color: #1a73e8;
+}
+
+/* ------------------ MAIN CONTENT ------------------ */
+.main-content {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    background-color: #fff;
+}
+
+/* ------------------ CALENDÁRIO ------------------ */
+.calendar-container {
+    background-color: #f5f5f5;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+}
+
+.calendar-day {
+    height: 80px;
+    background-color: #fff;
+    border-radius: 6px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 5px;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    transition: background-color 0.2s;
+}
+.calendar-day:hover {
+    background-color: #e0e0ff;
+}
+
+.day-number {
+    font-weight: bold;
+    color: #333;
+}
+
+/* ------------------ STUDY SESSIONS ------------------ */
+.study-sessions form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.study-sessions input,
+.study-sessions button {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+.study-sessions button {
+    background-color: #1a73e8;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+.study-sessions button:hover {
+    background-color: #155ab6;
+}
+
+/* ------------------ QUICK CHAT ------------------ */
+.quick-chat .chat-box {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+}
+.quick-chat form {
+    display: flex;
+    margin-top: 10px;
+}
+.quick-chat input {
+    flex: 1;
+    padding: 8px;
+    border-radius: 6px 0 0 6px;
+    border: 1px solid #ccc;
+}
+.quick-chat button {
+    padding: 8px 12px;
+    border-radius: 0 6px 6px 0;
+    border: none;
+    background-color: #1a73e8;
+    color: #fff;
+    cursor: pointer;
+}
+.quick-chat button:hover {
+    background-color: #155ab6;
+}
+
+
+
+.project-page {
+    display: flex;
+    min-height: 100vh;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f4f6f8;
+}
+
+/* Sidebar do projeto */
+.project-sidebar {
+    width: 250px;
+    background-color: #1e1e2f;
+    color: #fff;
+    padding: 20px;
+    border-right: 1px solid #333;
+}
+
+.project-sidebar h2 {
+    font-size: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #ffdd57;
+}
+
+.channel-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.channel-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.channel-item:hover {
+    background-color: #333366;
+}
+
+.channel-item span {
+    font-weight: bold;
+}
+
+.delete-channel {
+    background: transparent;
+    border: none;
+    color: #ff4d4d;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.new-channel-btn {
+    margin-top: 10px;
+    width: 100%;
+    padding: 8px 0;
+    background-color: #1a73e8;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.new-channel-btn:hover {
+    background-color: #155ab6;
+}
+
+/* Conteúdo principal */
+.project-main {
+    flex: 1;
+    padding: 20px;
+}
+
+#channel-content {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 10px;
+    min-height: 400px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Fundo do modal */
+.modal {
+    display: none; /* escondido por padrão */
+    position: fixed;
+    z-index: 1000; /* por cima de tudo */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* scroll se necessário */
+    background-color: rgba(0,0,0,0.5); /* fundo semi-transparente */
+}
+
+/* Modal overlay */
+.modal {
+    display: none; /* escondido inicialmente */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5); /* fundo semi-transparente */
+    animation: fadeIn 0.3s;
+}
+
+/* Modal content */
+.modal-content {
+    background-color: #fff;
+    margin: 8% auto; /* centralizado vertical e horizontal */
+    padding: 20px;
+    border-radius: 10px;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    animation: slideDown 0.3s;
+}
+
+/* Close button */
+.modal .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.modal .close:hover {
+    color: #000;
+}
+
+/* Inputs */
+.modal input[type="text"], .modal select {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0 15px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Checkboxes inline */
+.checkbox-group label {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+/* Submit button */
+.submit-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 16px;
+    transition: background-color 0.2s;
+}
+.submit-btn:hover {
+    background-color: #45a049;
+}
+
+/* Animations */
+@keyframes fadeIn { from {opacity:0} to {opacity:1} }
+@keyframes slideDown { from {transform: translateY(-50px)} to {transform: translateY(0)} }

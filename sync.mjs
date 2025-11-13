@@ -1,64 +1,70 @@
-import express from 'express'
-import cors from 'cors'
-import hbs from 'hbs'
-import cookieParser from 'cookie-parser'
-import session from 'express-session'
-import url from 'url'
-import passport from 'passport'
-import path from 'path'
+import express from 'express';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import session from 'express-session';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { engine } from 'express-handlebars';
 
-import * as data from './data/users-data.mjs'
-import syncServicesInit from './services/sync-services.mjs'
-import syncSiteInit from './site/sync-http-site.mjs'
+import * as data from './data/users-data.mjs';
+import syncServicesInit from './services/sync-services.mjs';
 
-const PORT = 1906
+// Rotas
+import authRoutes from './routes/auth.mjs';
+import homeRoutes from './routes/home.mjs';
+import projectRoutes from './routes/projects.mjs';
+import helpRoutes from './routes/help.mjs';
 
+const PORT = 1906;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
+const app = express();
 
-console.log("Start setting up server")
-let app = express()
-data.initializeData()
+// Inicializar dados
+data.initializeData();
+const syncServices = syncServicesInit(data);
 
-const syncServices = syncServicesInit(data)
-const syncSite = syncSiteInit(syncServices)
-
-app.use(cors())
-app.use(express.json())
-app.use(express.urlencoded({extended: true}))
-app.use(cookieParser())
-
+// Middlewares
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use(session({
     secret: "projeto sync",
-//    store: new FileStore()
-}
-))
+    resave: false,
+    saveUninitialized: true
+}));
 
-// view engine setup
-//const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+app.use((req, res, next) => {
+    req.session.count = (req.session.count || 0) + 1;
+    next();
+});
+app.use((req, res, next) => {
+    res.locals.loggedIn = !!req.session.userId;
+    next();
+});
 
-//app.set('view engine', 'hbs');
-//app.set('views', path.join(__dirname, 'web', 'site', 'views'));
+// Ficheiros públicos
+app.use(express.static(path.join(__dirname, 'site/public')));
 
+// Handlebars
+app.engine('hbs', engine({
+    extname: 'hbs',
+    defaultLayout: 'main',
+    layoutsDir: path.join(__dirname, 'site/views/layouts'),
+    partialsDir: path.join(__dirname, 'site/views/partials')
+}));
+app.set('view engine', 'hbs');
+app.set('views', path.join(__dirname, 'site/views'));
+import hbs from 'hbs';
+hbs.registerPartials(path.join(__dirname, 'site/views/partials'));
 
-app.use(cookieMwSession)
+// Rotas
+app.use('/', authRoutes);
+app.use('/', homeRoutes);
+app.use('/projects', projectRoutes);
+app.use('/', helpRoutes);
 
-//ROTAS
-//app.get('/login', syncSite.login)
-//app.post('/login', syncSite.validateLogin)
-//app.get('/logout', syncSite.logout)
-
-app.post('/createUser', syncSite.createUser)
-
-app.listen(PORT, () => console.log(`Server listening in http://localhost:${PORT}`))
-
-function cookieMwSession(req, rsp, next) {
-    let count = req.session.count
-
-    if(count == undefined) {
-        req.session.count = 0
-    }
-    ++req.session.count
-    //console.log(req.session.count)
-    
-    next()
-}
+// Iniciar servidor
+app.listen(PORT, () => console.log(`Server listening at http://localhost:${PORT}`));

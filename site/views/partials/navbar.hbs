@@ -1,0 +1,14 @@
+<nav class="navbar">
+    <a href="/">SYNC</a>
+    <a href="/faqs">FAQs</a>
+    <a href="/help">HELP</a>
+    <a href="/aboutus">ABOUT US</a>
+
+    {{#if loggedIn}}
+        <a href="/home">Home</a>
+        <a href="/logout">Logout</a>
+    {{else}}
+        <a href="#" id="loginBtn">Login</a>
+        <a href="/register">Register</a>
+    {{/if}}
+</nav>

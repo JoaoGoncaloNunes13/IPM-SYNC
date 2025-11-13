@@ -1,0 +1,48 @@
+<div class="project-page">
+    <!-- Sidebar do Projeto -->
+    <aside class="project-sidebar">
+        <h2>{{project.name}}</h2>
+        <ul class="channel-list">
+            {{#each project.channels}}
+                <li class="channel-item">
+                    <span>#{{this.name}}</span>
+                    <button class="delete-channel" onclick="deleteChannel('{{this.name}}')">×</button>
+                </li>
+            {{/each}}
+        </ul>
+        <button class="new-channel-btn" onclick="createChannel()">+ Novo Canal</button>
+    </aside>
+
+    <!-- Conteúdo principal -->
+    <main class="project-main">
+        <h3 id="current-channel">Bem-vindo ao {{project.name}}</h3>
+        <div id="channel-content">
+            <p>Selecione um canal para ver as mensagens.</p>
+        </div>
+    </main>
+</div>
+
+<script>
+    function createChannel() {
+        const channelName = prompt("Nome do novo canal:");
+        if (channelName) {
+            // Aqui depois fazes chamada POST para backend criar o canal
+            const ul = document.querySelector(".channel-list");
+            const li = document.createElement("li");
+            li.className = "channel-item";
+            li.innerHTML = `<span>#${channelName}</span> <button class="delete-channel" onclick="deleteChannel('${channelName}')">×</button>`;
+            ul.appendChild(li);
+        }
+    }
+
+    function deleteChannel(name) {
+        if (confirm(`Tens a certeza que queres apagar o canal #${name}?`)) {
+            const channels = document.querySelectorAll(".channel-item");
+            channels.forEach(ch => {
+                if (ch.querySelector("span").textContent === "#" + name) {
+                    ch.remove();
+                }
+            });
+        }
+    }
+</script>
