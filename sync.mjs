@@ -8,14 +8,19 @@ import passport from 'passport'
 import path from 'path'
 
 import * as data from './data/users-data.mjs'
-import cmdbServicesInit from './services/sync-services.mjs'
+import syncServicesInit from './services/sync-services.mjs'
+import syncSiteInit from './site/sync-http-site.mjs'
 
 const PORT = 1906
 
-const cmdbServices = cmdbServicesInit(data)
+
 
 console.log("Start setting up server")
 let app = express()
+data.initializeData()
+
+const syncServices = syncServicesInit(data)
+const syncSite = syncSiteInit(syncServices)
 
 app.use(cors())
 app.use(express.json())
@@ -34,7 +39,15 @@ app.use(session({
 //app.set('view engine', 'hbs');
 //app.set('views', path.join(__dirname, 'web', 'site', 'views'));
 
+
 app.use(cookieMwSession)
+
+//ROTAS
+//app.get('/login', syncSite.login)
+//app.post('/login', syncSite.validateLogin)
+//app.get('/logout', syncSite.logout)
+
+app.post('/createUser', syncSite.createUser)
 
 app.listen(PORT, () => console.log(`Server listening in http://localhost:${PORT}`))
 

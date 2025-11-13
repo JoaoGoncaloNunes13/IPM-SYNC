@@ -17,14 +17,14 @@ export default function(Data) {
         createChannel: createChannel,
         getChannels: getChannels,
         sendMessage: sendMessage,
-        getMessages: getMessages,
-        createStudySession: createStudySession,
-        createReminder: createReminder
+        //getMessages: getMessages,
+        //createStudySession: createStudySession,
+        //createReminder: createReminder
 
     }
 
-    async function createUser(username, email, password) {
-        return Data.createUser(username, email, password);
+    async function createUser(userToCreate) {
+        return Data.createUser(userToCreate);
     }
 
     async function getUser(id) {

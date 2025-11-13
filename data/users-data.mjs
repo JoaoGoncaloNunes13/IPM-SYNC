@@ -3,7 +3,7 @@ import { randomUUID } from 'crypto'
 let users = [];
 let servers = [];
 
-function initializeData() {
+export function initializeData() {
   if (users.length > 0 || servers.length > 0) return; // evita duplicar dados
 
   // Criar 5 utilizadores
@@ -46,12 +46,18 @@ function initializeData() {
 
 
 // Funçoes para gerir utilizadores
-export async function createUser(name, email, password) {
-    if (users.find((u) => u.email === email)) {
+export async function createUser(userToCreate) {
+    if (users.find((u) => u.email === userToCreate.email)) {
         throw new Error("Email already in use");
     } else {
-        const newUser = { id: randomUUID(), name, email, password };
+        let  newUser = 
+        { id: randomUUID(), 
+          name: userToCreate.name, 
+          email: userToCreate.email , 
+          password: userToCreate.password 
+        };
         users.push(newUser);
+        console.log(users);
         return newUser;
     }
 }
