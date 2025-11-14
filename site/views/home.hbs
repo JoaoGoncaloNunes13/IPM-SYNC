@@ -1,33 +1,30 @@
 <div class="home-page">
+    <aside class="sidebar" id="sidebar">
+        <button class="sidebar-toggle" id="sidebarToggle">☰</button>
 
-    <aside class="sidebar">
         <h2>Projetos</h2>
+
         <ul class="project-list">
             {{#each projects}}
-                <li class="project-bubble" title="{{this.name}}" onclick="openProject({{this.id}})">
+                <li class="project-bubble" title="{{this.name}}" onclick="openProject('{{this.id}}')">
                     <span>{{this.initial}}</span>
                 </li>
             {{/each}}
-            <li class="project-bubble new-project" onclick="createNewProject()" title="Criar novo projeto">+</li>
+            <li class="project-bubble new-project" onclick="openCreateServerModal()" title="Criar novo servidor">+</li>
         </ul>
-
-
     </aside>
+
+    <!-- Modal de criação de servidor -->
     {{> createServer}}
-    <script src="/js/createServer.mjs"></script>
+
+    <!-- Scripts -->
+    <script type="module" src="/js/createServer.js"></script>
+
     <script>
-        function showProjectName(name) {
-            alert("Projeto selecionado: " + name);
-        }
         function openProject(projectId) {
             window.location.href = `/projects/${projectId}`;
         }
-        function createNewProject() {
-            const form = document.getElementById("createServerForm");
-            form.style.display = form.style.display === "none" ? "block" : "none";
-        }
     </script>
-
 
     <!-- Conteúdo central -->
     <main class="main-content">
@@ -45,21 +42,8 @@
         <script>
             function showEvents(date) {
                 alert("Eventos do dia " + date);
-                // Aqui podes abrir popup com lista de eventos reais
             }
         </script>
-
-        <!-- Topo: calendário / próximas tarefas -->
-        <section class="calendar">
-            <h2>Próximos Eventos</h2>
-            <ul class="events-list">
-                {{#each upcomingEvents}}
-                    <li>
-                        <strong>{{this.title}}</strong> - {{this.date}} ({{this.type}})
-                    </li>
-                {{/each}}
-            </ul>
-        </section>
 
         <!-- Sessões de estudo -->
         <section class="study-sessions">
@@ -72,24 +56,5 @@
                 <button type="submit">Criar Sessão</button>
             </form>
         </section>
-
-        <!-- Mensagens rápidas / chat -->
-        <section class="quick-chat">
-            <h2>Chat Rápido</h2>
-            <div class="chat-box">
-                {{#each recentMessages}}
-                    <div class="message">
-                        <strong>{{this.user}}</strong>: {{this.content}}
-                    </div>
-                {{/each}}
-            </div>
-            <form id="chatForm" action="/sendMessage" method="POST">
-                <input type="text" name="message" placeholder="Escreve aqui..." required>
-                <button type="submit">Enviar</button>
-            </form>
-        </section>
-
     </main>
-
 </div>
-

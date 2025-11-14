@@ -53,7 +53,6 @@ export function initializeData() {
 }
 
 
-// Funçoes para gerir utilizadores
 export async function createUser(userToCreate) {
     if (users.find((u) => u.email === userToCreate.email)) {
         throw new Error("Email already in use");

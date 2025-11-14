@@ -25,19 +25,4 @@ router.post('/:projectId/channels', async (req, res) => {
     }
 });
 
-// Criar novo servidor (API)
-router.post('/api/servers', async (req, res) => {
-    if (!req.session.userId) return res.status(401).send("Não autorizado");
-
-    const { name } = req.body;
-    if (!name) return res.status(400).send("Nome do servidor é obrigatório");
-
-    try {
-        const newServer = await data.createServer(name, req.session.userId);
-        res.json(newServer);
-    } catch (err) {
-        res.status(500).send(err.message);
-    }
-});
-
 export default router;

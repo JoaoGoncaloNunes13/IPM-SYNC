@@ -14,6 +14,7 @@ import authRoutes from './routes/auth.mjs';
 import homeRoutes from './routes/home.mjs';
 import projectRoutes from './routes/projects.mjs';
 import helpRoutes from './routes/help.mjs';
+import serverRoutes from './routes/servers.mjs';
 
 const PORT = 1906;
 const __filename = fileURLToPath(import.meta.url);
@@ -63,6 +64,7 @@ hbs.registerPartials(path.join(__dirname, 'site/views/partials'));
 // Rotas
 app.use('/', authRoutes);
 app.use('/', homeRoutes);
+app.use('/api', serverRoutes)
 app.use('/projects', projectRoutes);
 app.use('/', helpRoutes);
 

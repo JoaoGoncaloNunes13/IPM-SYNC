@@ -94,15 +94,86 @@ body {
 }
 
 /* ------------------ SIDEBAR ------------------ */
+/* ------------------ SIDEBAR TOGGLE ------------------ */
 .sidebar {
-    width: 150px; /* Aumentei de 80px para 150px */
+    width: 180px;
     background-color: #1e1e2f;
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 20px 0;
     gap: 25px;
+    transition: width 0.3s ease, transform 0.3s ease;
+    overflow: hidden;
+    position: relative;
 }
+
+/* Estado fechada */
+.sidebar.closed {
+    width: 70px;
+}
+
+/* Botão de toggle */
+.sidebar-toggle {
+    position: absolute;
+    top: 15px;
+    right: -40px;
+    width: 35px;
+    height: 35px;
+    border-radius: 8px;
+    background: #1e1e2f;
+    color: white;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.sidebar-toggle:hover {
+    background: #2a2a45;
+}
+
+/* Título desaparece quando a sidebar está fechada */
+.sidebar.closed h2 {
+    opacity: 0;
+    transform: translateX(-20px);
+    pointer-events: none;
+}
+
+/* Lista animada */
+.project-list {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    width: 100%;
+}
+
+/* Animação quando a sidebar fecha */
+.sidebar.closed .project-list {
+    opacity: 0;
+    transform: translateX(-20px);
+    pointer-events: none;
+}
+
+/* Bubbless */
+.project-bubble {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #3a3a5e;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-weight: bold;
+    transition: transform 0.2s, background-color 0.2s;
+    font-size: 16px;
+    opacity: 1;
+}
+
+.sidebar.closed .project-bubble {
+    margin-left: -10px;
+}
+
 .sidebar h2 {
     color: #1a73e8; /* Azul brilhante */
     font-weight: bold;
@@ -417,3 +488,39 @@ body {
 /* Animations */
 @keyframes fadeIn { from {opacity:0} to {opacity:1} }
 @keyframes slideDown { from {transform: translateY(-50px)} to {transform: translateY(0)} }
+/* Modal em fundo escuro */
+.modal {
+    display: none; /* escondido por padrão */
+    position: fixed;
+    z-index: 1000; /* sempre acima */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5); /* fundo semitransparente */
+    justify-content: center;
+    align-items: center;
+}
+
+/* Conteúdo do modal */
+.modal-content {
+    background-color: #fff;
+    margin: auto;
+    padding: 20px;
+    border-radius: 10px;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    position: relative;
+}
+
+/* Botão de fechar */
+.modal .close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 25px;
+    font-weight: bold;
+    cursor: pointer;
+}

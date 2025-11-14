@@ -1,10 +1,34 @@
+function openCreateServerModal() {
+    const modal = document.getElementById("createServerModal");
+    if (modal) modal.style.display = "flex";
+}
+
+function closeCreateServerModal() {
+    const modal = document.getElementById("createServerModal");
+    if (modal) modal.style.display = "none";
+}
+
+window.openCreateServerModal = openCreateServerModal;
 document.addEventListener("DOMContentLoaded", () => {
+    const sidebar = document.getElementById("sidebar");
+    const toggle = document.getElementById("sidebarToggle");
+
+    toggle.addEventListener("click", () => {
+        sidebar.classList.toggle("closed");
+    });
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    if (!window.serverFormLoaded) {
+        window.serverFormLoaded = true;
+    } else {
+        return; // impede duplicação
+    }
+
     const form = document.getElementById("createServerForm");
-    if (!form) return; // evita erros se o form não estiver na página
+    if (!form) return;
 
-    const servers = [];
-
-    form.addEventListener("submit", function(e) {
+    form.addEventListener("submit", async function (e) {
         e.preventDefault();
 
         const serverName = document.getElementById("serverName").value;
@@ -17,19 +41,26 @@ document.addEventListener("DOMContentLoaded", () => {
             calendario: document.getElementById("calendario").checked ? [] : null,
         };
 
-        const newServer = {
-            id: servers.length + 1,
-            name: serverName,
-            ownerId,
-            members,
-            channels,
-        };
+        const response = await fetch("/api/servers", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify( { name: serverName, ownerId, members, channels })
+        });
+        if (!response.ok) {
+            alert("Erro ao criar servidor: " + (await response.text()));
+        }
+        if (response.ok) {
+            alert("Servidor criado com sucesso!");
+        }
 
-        servers.push(newServer);
-        alert("Servidor criado: " + serverName);
-        console.log("Servidores:", servers);
 
-        this.reset();
-        this.style.display = "none"; // opcional, se estiveres a esconder o form
+        form.reset();
+        closeCreateServerModal();
+    });
+
+    // Fecha modal ao clicar fora do conteúdo
+    const modal = document.getElementById("createServerModal");
+    modal.addEventListener("click", (e) => {
+        if (e.target === modal) closeCreateServerModal();
     });
 });
