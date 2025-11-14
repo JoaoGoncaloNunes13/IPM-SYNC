@@ -1,4 +1,5 @@
-import { randomUUID } from 'crypto'
+import {randomUUID} from 'crypto'
+
 const calendarDays = [];
 const today = new Date();
 const year = today.getFullYear();
@@ -7,49 +8,67 @@ const month = today.getMonth();
 const daysInMonth = new Date(year, month + 1, 0).getDate();
 
 for (let i = 1; i <= daysInMonth; i++) {
-    calendarDays.push({ day: i, date: `${year}-${month+1}-${i}` });
+    calendarDays.push({day: i, date: `${year}-${month + 1}-${i}`});
 }
 
 export let users = [];
 export let servers = [];
 
 export function initializeData() {
-  if (users.length > 0 || servers.length > 0) return;
+    if (users.length > 0 || servers.length > 0) return;
 
-  users = [
-    { id: randomUUID(), name: "João Nunes", email: "joao@sync.com", password: "1234" },
-    { id: randomUUID(), name: "Madalena Alves", email: "madalena@sync.com" , password: "1234"  },
-    { id: randomUUID(), name: "Pedro Peres", email: "pedro@sync.com" , password: "1234" },
-    { id: randomUUID(), name: "Ricardo Oliveira", email: "ricardo@sync.com", password: "1234"  },
-    { id: randomUUID(), name: "Professora Teresa", email: "teresa@sync.com" , password: "1234" },
-  ];
+    users = [
+        {id: randomUUID(), name: "João Nunes", email: "joao@sync.com", password: "1234"},
+        {id: randomUUID(), name: "Madalena Alves", email: "madalena@sync.com", password: "1234"},
+        {id: randomUUID(), name: "Pedro Peres", email: "pedro@sync.com", password: "1234"},
+        {id: randomUUID(), name: "Ricardo Oliveira", email: "ricardo@sync.com", password: "1234"},
+        {id: randomUUID(), name: "Professora Teresa", email: "teresa@sync.com", password: "1234"},
+    ];
 
-  servers = [
-    {
-      id: 0,
-      name: "Projeto IPM",
-      ownerId: users[0].id,
-      channels: {
-        texto: [],
-        grupos: [],
-        tarefas: [],
-        calendario: [],
-      },
-      members: [users[0].id],
-    },
-    {
-      id: 1,
-      name: "Trabalho Engenharia",
-      ownerId: users[1].id,
-      channels: {
-        texto: [],
-        grupos: [],
-        tarefas: [],
-        calendario: [],
-      },
-      members: [users[1].id],
-    },
-  ];
+    servers = [
+        {
+            id: 0,
+            name: "Projeto IPM",
+            ownerId: users[0].id,
+            channels: {
+                texto: [],
+                grupos: [],
+                tarefas: [],
+                calendario: [],
+            },
+            members: [{
+                id: users[0].id,
+                name: users[0].name,
+                role: "owner"
+            },
+                {
+                    id: users[1].id,
+                    name: users[1].name,
+                    role: "standard"
+                }
+
+            ],
+        },
+        {
+            id: 1,
+            name: "Trabalho Engenharia",
+            ownerId: users[1].id,
+            channels: {
+                texto: [ {id: 0, name: "Geral", messages: []} , // tem que ter ID do user q mandou a msg e texto
+                    {id: 1, name: "canal 2 de texto", messages: [] }
+
+                ],
+                grupos: [],
+                tarefas: [],
+                calendario: [],
+            },
+            members:  [{
+                id: users[0].id,
+                name: users[0].name,
+                role: "owner"
+            }],
+        },
+    ];
 }
 
 
@@ -57,12 +76,13 @@ export async function createUser(userToCreate) {
     if (users.find((u) => u.email === userToCreate.email)) {
         throw new Error("Email already in use");
     } else {
-        let  newUser = 
-        { id: randomUUID(), 
-          name: userToCreate.name, 
-          email: userToCreate.email , 
-          password: userToCreate.password 
-        };
+        let newUser =
+            {
+                id: randomUUID(),
+                name: userToCreate.name,
+                email: userToCreate.email,
+                password: userToCreate.password
+            };
         users.push(newUser);
         console.log(users);
         return newUser;
@@ -91,20 +111,20 @@ export async function addUserToServer(userId, serverId) {
 // Funçoes para gerir servidores
 
 export async function createServer(name, ownerId) {
-  const newServer = {
-    id: servers.length,
-    name,
-    ownerId,
-    channels: {
-      texto: [],
-      grupos: [],
-      tarefas: [],
-      calendario: [],
-    },
-    members: [ownerId],
-  };
-  servers.push(newServer);
-  return newServer;
+    const newServer = {
+        id: servers.length,
+        name,
+        ownerId,
+        channels: {
+            texto: [],
+            grupos: [],
+            tarefas: [],
+            calendario: [],
+        },
+        members: [ownerId],
+    };
+    servers.push(newServer);
+    return newServer;
 }
 
 export async function getServer(idServer) {
@@ -116,24 +136,24 @@ export async function getServer(idServer) {
 //criação de canais
 
 export async function createChannel(serverId, type, name) {  //alterar para depois cada tipo de canal que temos
-  const server = getServer(serverId);
-  let channel = null;
-  if (!server) throw new Error("Servidor não encontrado.");
-  if (!server.channels[type]) throw new Error("Tipo de canal inválido.");
-  if(type == 'texto') {
-        channel = { id: randomUUID(), name, messages: [] };
+    const server = getServer(serverId);
+    let channel = null;
+    if (!server) throw new Error("Servidor não encontrado.");
+    if (!server.channels[type]) throw new Error("Tipo de canal inválido.");
+    if (type == 'texto') {
+        channel = {id: randomUUID(), name, messages: []};
     } else {
-        channel = { id: randomUUID(), name };
+        channel = {id: randomUUID(), name};
     }
-  
-  server.channels[type].push(channel);
-  return channel;
+
+    server.channels[type].push(channel);
+    return channel;
 }
 
 export async function getChannel(serverId, type, channelId) {
-  const server = getServer(serverId);
-  if (!server) throw new Error("Servidor não encontrado.");
-  if (!server.channels[type]) throw new Error("Tipo de canal inválido.");
+    const server = getServer(serverId);
+    if (!server) throw new Error("Servidor não encontrado.");
+    if (!server.channels[type]) throw new Error("Tipo de canal inválido.");
     const channel = server.channels[type].find((c) => c.id === channelId);
     if (!channel) throw new Error("Canal não encontrado.");
     return channel;
@@ -145,8 +165,8 @@ export async function sendMessage(serverId, channelType, channelId, userId, cont
     const channel = await getChannel(serverId, channelType, channelId);
     const user = await getUser(userId);
     if (!channel) throw new Error("Channel not found");
-    if (!user) throw new Error("User not found");   
-    const message = { id: randomUUID(), userId, content, timestamp: new Date() };
+    if (!user) throw new Error("User not found");
+    const message = {id: randomUUID(), userId, content, timestamp: new Date()};
     channel.messages.push(message);
     return message;
 }
@@ -160,23 +180,23 @@ export async function getMessages(serverId, channelType, channelId) {
 // lembretes e sessoes de estudo
 
 export async function createStudySession(userId, title, date, duration) {
-  const user = getUser(userId);
-  if (!user) throw new Error("Utilizador não encontrado.");
+    const user = getUser(userId);
+    if (!user) throw new Error("Utilizador não encontrado.");
 
-  if (!user.calendar) user.calendar = [];
-  const session = { id: user.calendar.length, title, date, duration, type: "sessão" };
-  user.calendar.push(session);
-  return session;
+    if (!user.calendar) user.calendar = [];
+    const session = {id: user.calendar.length, title, date, duration, type: "sessão"};
+    user.calendar.push(session);
+    return session;
 }
 
 export async function createReminder(userId, title, date) {
-  const user = getUser(userId);
-  if (!user) throw new Error("Utilizador não encontrado.");
+    const user = getUser(userId);
+    if (!user) throw new Error("Utilizador não encontrado.");
 
-  if (!user.calendar) user.calendar = [];
-  const reminder = { id: user.calendar.length, title, date, type: "lembrete" };
-  user.calendar.push(reminder);
-  return reminder;
+    if (!user.calendar) user.calendar = [];
+    const reminder = {id: user.calendar.length, title, date, type: "lembrete"};
+    user.calendar.push(reminder);
+    return reminder;
 }
 
 export async function loginUser(email, password) {

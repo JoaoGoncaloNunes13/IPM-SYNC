@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
             calendario: document.getElementById("calendario").checked ? [] : null,
         };
 
-        const response = await fetch("/api/servers", {
+        const response = await fetch("/servers", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify( { name: serverName, ownerId, members, channels })
