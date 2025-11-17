@@ -9,15 +9,9 @@ router.post('/servers/:serverId/members', async (req, res) => {
     const {userId, role} = req.body; // role opcional: "member" por default
 
     try {
-        const server = await data.getServer(serverId);
-        const user = await data.getUser(userId);
 
-        if (server.members.find(m => m.id === userId)) {
-            return res.status(400).send("User already a member");
-        }
-
-        server.members.push({id: userId, role: role || "member"});
-        res.json(server.members);
+        await data.addUserToServer(userId, serverId, role);
+        res.json(data.servers[serverId].members);
     } catch (err) {
         res.status(400).send(err.message);
     }

@@ -7,11 +7,7 @@ router.get('/home', (req, res) => {
 
     const user = data.users.find(u => u.id === req.session.userId);
 
-    const projects = data.servers.map(s => ({
-        id: s.id,
-        name: s.name,
-        initial: s.name.charAt(0).toUpperCase()
-    }));
+    const projects = data.servers.filter(server => server.members.some(member => member.id === user.id));
 
     const upcomingEvents = [];
     const recentMessages = [];

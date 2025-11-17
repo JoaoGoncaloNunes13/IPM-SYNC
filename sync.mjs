@@ -14,6 +14,7 @@ import authRoutes from './routes/auth.mjs';
 import homeRoutes from './routes/home.mjs';
 import serverRoutes from './routes/servers.mjs';
 import helpRoutes from './routes/help.mjs';
+import canaisRoutes from './routes/canais.mjs';
 
 const PORT = 1906;
 const __filename = fileURLToPath(import.meta.url);
@@ -64,6 +65,7 @@ app.use('/', authRoutes);
 app.use('/', homeRoutes);
 app.use('/', serverRoutes);
 app.use('/', helpRoutes);
+app.use('/', canaisRoutes);
 
 // Iniciar servidor
 app.listen(PORT, () => console.log(`Server listening at http://localhost:${PORT}`));

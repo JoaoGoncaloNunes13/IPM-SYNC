@@ -32,19 +32,28 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault();
 
         const serverName = document.getElementById("serverName").value;
-        const ownerId = parseInt(document.getElementById("ownerId").value);
-        const members = Array.from(document.getElementById("members").selectedOptions).map(opt => parseInt(opt.value));
         const channels = {
-            texto: document.getElementById("texto").checked ? [] : null,
-            grupos: document.getElementById("grupos").checked ? [] : null,
-            tarefas: document.getElementById("tarefas").checked ? [] : null,
-            calendario: document.getElementById("calendario").checked ? [] : null,
+            grupos: document.getElementById("grupos").checked ? {
+                id: randomUUID(),
+                name: "Grupos",
+                grupos: []
+            } : null,
+            tarefas: document.getElementById("tarefas").checked ? {
+                id: randomUUID(),
+                name: "Tarefas",
+                tasks: []
+            } : null,
+            calendario: document.getElementById("calendario").checked ? {
+                id: randomUUID(),
+                name: "Calendário",
+                events: []
+            } : null,
         };
 
         const response = await fetch("/servers", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify( { name: serverName, ownerId, members, channels })
+            body: JSON.stringify( { name: serverName,channels })
         });
         if (!response.ok) {
             alert("Erro ao criar servidor: " + (await response.text()));
@@ -56,6 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         form.reset();
         closeCreateServerModal();
+        window.location.reload();
     });
 
     // Fecha modal ao clicar fora do conteúdo
@@ -64,3 +74,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (e.target === modal) closeCreateServerModal();
     });
 });
+
+hbs.registerHelper("initial", function(name) {
+    return name.charAt(0).toUpperCase();
+});
+

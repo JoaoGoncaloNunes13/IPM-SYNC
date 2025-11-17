@@ -23,13 +23,18 @@ export function initializeData() {
         {id: randomUUID(), name: "Pedro Peres", email: "pedro@sync.com", password: "1234"},
         {id: randomUUID(), name: "Ricardo Oliveira", email: "ricardo@sync.com", password: "1234"},
         {id: randomUUID(), name: "Professora Teresa", email: "teresa@sync.com", password: "1234"},
+        {id: randomUUID(), name: "Fernando Torres", email: "fernando@gmail.com", password: "1234"},
+        {id: randomUUID(), name: "Miguel Gamboa", email: "miguel@gmail.com", password: "1234"},
+        {id: randomUUID(), name: "João Trindade", email: "joao@gmail.com", password: "1234"},
+        {id: randomUUID(), name: "Pedro Felix", email: "pedro@gmail.com", password: "1234"},
     ];
 
     servers = [
         {
             id: 0,
-            name: "Projeto IPM",
+            name: "Projeto IPM Teste",
             ownerId: users[0].id,
+            codigo: "ABC123",
             channels: {
                 texto: [],
                 grupos: [],
@@ -53,6 +58,7 @@ export function initializeData() {
             id: 1,
             name: "Trabalho Engenharia",
             ownerId: users[1].id,
+            codigo: "DEF456",
             channels: {
                 texto: [ {id: 0, name: "Geral", messages: []} , // tem que ter ID do user q mandou a msg e texto
                     {id: 1, name: "canal 2 de texto", messages: [] }
@@ -68,7 +74,53 @@ export function initializeData() {
                 role: "owner"
             }],
         },
+
+        {
+            id: 2,
+            name: "Projeto IPM",
+            ownerId: users[5].id,
+            codigo: "GHI789",
+            channels: {
+                texto: [{
+                    id: 0, 
+                    name: "Canal de Texto", 
+                    messages: [{id: 0, authorId: users[5].id, author: users[5].name, content: "Olá a todos!", timestamp: new Date()},]
+                    },
+                    {
+                        id: 1, 
+                        name: "Segundo Canal de Texto", 
+                        messages: []
+                    }],
+                grupos: [],
+                tarefas: [],
+                calendario: [],
+            },
+            members:[{
+                        id: users[5].id,
+                        name: users[5].name,
+                        role: "owner"
+                    },
+                    {
+                        id: users[6].id,
+                        name: users[6].name,
+                        role: "standard"
+                    },
+                    {
+                        id: users[7].id,
+                        name: users[7].name,
+                        role: "standard"
+                    },
+                    {
+                        id: users[8].id,
+                        name: users[8].name,
+                        role: "standard"
+                    }
+            ],
+        }
     ];
+
+    console.log(servers.find(s => s.id === 2).channels.texto);
+    console.log(servers.find(s => s.id === 2).channels['texto']);
 }
 
 
@@ -95,12 +147,13 @@ export async function getUser(id) {
     return user;
 }
 
-export async function addUserToServer(userId, serverId) {
+export async function addUserToServer(userId, serverId, role) {
     let server = servers.find(s => s.id === serverId);
     if (!server) throw new Error("Server not found");
-    if (!users.find(u => u.id === userId)) throw new Error("User not found");
+    let user = users.find(u => u.id === userId);
+    if (!user) throw new Error("User not found");
     if (!server.members.includes(userId)) {
-        server.members.push(userId);
+        server.members.push({id: userId, name: user.name, role: role || "member"});
         console.log("User added to server successfully");
         return server.members;
     } else {
@@ -110,18 +163,27 @@ export async function addUserToServer(userId, serverId) {
 
 // Funçoes para gerir servidores
 
-export async function createServer(name, ownerId) {
+export async function createServer(name, ownerId, channels) {
     const newServer = {
         id: servers.length,
         name,
         ownerId,
+        codigo: Math.random().toString(36).substring(2, 8).toUpperCase(),
         channels: {
-            texto: [],
-            grupos: [],
-            tarefas: [],
-            calendario: [],
+            texto: [{
+                id: randomUUID(),
+                name: "Geral",
+                messages: []
+            }],
+            grupos: channels.grupos ? [channels.grupos] : [],
+            tarefas: channels.tarefas ? [channels.tarefas] : [],
+            calendario: channels.calendario ? [channels.calendario] : [],
         },
-        members: [ownerId],
+        members: [{
+            id: ownerId,
+            name: (await getUser(ownerId)).name,
+            role: "owner"
+        }],
     };
     servers.push(newServer);
     return newServer;
@@ -142,8 +204,12 @@ export async function createChannel(serverId, type, name) {  //alterar para depo
     if (!server.channels[type]) throw new Error("Tipo de canal inválido.");
     if (type == 'texto') {
         channel = {id: randomUUID(), name, messages: []};
-    } else {
-        channel = {id: randomUUID(), name};
+    } else if(type == 'grupos') {
+        channel = {id: randomUUID(), name, grupos: []};
+    } else if (type == 'tarefas') {
+        channel = {id: randomUUID(), name, tarefas: []};
+    } else if (type == 'calendario') {
+        channel = {id: randomUUID(), name, eventos: []};
     }
 
     server.channels[type].push(channel);
@@ -151,9 +217,15 @@ export async function createChannel(serverId, type, name) {  //alterar para depo
 }
 
 export async function getChannel(serverId, type, channelId) {
-    const server = getServer(serverId);
+    const server = await getServer(serverId);
     if (!server) throw new Error("Servidor não encontrado.");
-    if (!server.channels[type]) throw new Error("Tipo de canal inválido.");
+    let a = server.channels;
+    let b = server.channels['texto'];
+    let channelType = server.channels[type]
+    console.log(a);
+    console.log(b);
+    console.log(server.channels[type]);
+    if (!channelType) throw new Error("Tipo de canal inválido.");
     const channel = server.channels[type].find((c) => c.id === channelId);
     if (!channel) throw new Error("Canal não encontrado.");
     return channel;
@@ -166,7 +238,7 @@ export async function sendMessage(serverId, channelType, channelId, userId, cont
     const user = await getUser(userId);
     if (!channel) throw new Error("Channel not found");
     if (!user) throw new Error("User not found");
-    const message = {id: randomUUID(), userId, content, timestamp: new Date()};
+    const message = {id: randomUUID(), authorId: userId, author: user.name, content: content, timestamp: new Date()};
     channel.messages.push(message);
     return message;
 }

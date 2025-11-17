@@ -1,6 +1,6 @@
 import express from 'express';
 import * as data from '../data/users-data.mjs';
-import {createServer} from "../data/users-data.mjs";
+
 
 const router = express.Router();
 
@@ -15,17 +15,7 @@ router.get('/servers/:serverId', async (req, res) => {
     }
 });
 
-// Criar canal
-router.post('/servers/:serverId/channels', async (req, res) => {
-    const projectId = parseInt(req.params.projectId);
-    const {type, name} = req.body;
-    try {
-        const channel = await data.createChannel(projectId, type, name);
-        res.json(channel);
-    } catch (err) {
-        res.status(400).send(err.message);
-    }
-});
+
 
 // verificar os membros que estao no projeto
 router.get('/servers/:serverId/members', async (req, res) => {
@@ -38,25 +28,24 @@ router.get('/servers/:serverId/members', async (req, res) => {
         res.status(404).send(err.message);
     }
 });
+
+//Criar um servidor
 router.post("/servers", async (req, res) => {
     try {
-        const {name, ownerId, channels, members} = req.body;
+        const {name,channels} = req.body;
+        const ownerId = req.session.userId;
 
-        const newServer = await createServer(name, ownerId);
+        const newServer = await data.createServer(name, ownerId, channels);
 
-        if (members) {
-            newServer.members = members;
-        }
 
-        // E os canais
-        if (channels) {
-            newServer.channels = channels;
-        }
+        console.log(data.servers);
 
         res.json(newServer);
+        
     } catch (err) {
         res.status(400).json({error: err.message});
     }
 });
+
 
 export default router;

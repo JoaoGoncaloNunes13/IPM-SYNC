@@ -7,7 +7,7 @@
         <ul class="project-list">
             {{#each projects}}
                 <li class="project-bubble" title="{{this.name}}" onclick="openProject('{{this.id}}')">
-                    <span>{{this.initial}}</span>
+                    <span>{{lookup this.name 0}}</span>
                 </li>
             {{/each}}
             <li class="project-bubble new-project" onclick="openCreateServerModal()" title="Criar novo servidor">+</li>
@@ -20,10 +20,13 @@
     <!-- Scripts -->
     <script type="module" src="/js/createServer.js"></script>
 
+    
+
     <script>
         function openProject(serveId) {
             window.location.href = `/servers/${serveId}`;
         }
+
     </script>
 
     <!-- Conteúdo central -->
