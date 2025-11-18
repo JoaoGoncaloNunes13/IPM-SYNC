@@ -255,13 +255,58 @@ export async function getMessages(serverId, channelType, channelId) {
 
 // lembretes e sessoes de estudo
 
-export async function createStudySession(userId, title, date, duration) {
+export async function createStudySessions(userId, title, date, endDate, duration, time,color) {
     const user = await getUser(userId);
     if (!user) throw new Error("Utilizador não encontrado.");
-    const session = {id: user.calendar.length, title, date, duration, type: "sessão"};
-    user.calendar.push(session);
-    return session;
+
+    const sessions = [];
+
+    // Constrói ISO completa da primeira sessão
+    const firstSessionDate = time ? `${date}T${time}` : date;
+
+    if (!endDate) {
+        // Apenas uma sessão
+        const session = {
+            id: user.calendar.length,
+            title,
+            date: firstSessionDate,
+            duration,
+            color: color,
+            type: "sessão"
+        };
+        user.calendar.push(session);
+        sessions.push(session);
+    } else {
+        // Criar várias sessões entre date e endDate
+        let currentDate = new Date(date);
+        const finalDate = new Date(endDate);
+
+        while (currentDate <= finalDate) {
+            // Reconstrói ISO string incluindo hora se houver
+            const sessionDate = time
+                ? `${currentDate.toISOString().split('T')[0]}T${time}`
+                : currentDate.toISOString().split('T')[0];
+
+            const session = {
+                id: user.calendar.length,
+                title,
+                date: sessionDate,
+                duration,
+                color: color,
+                type: "sessão"
+            };
+            user.calendar.push(session);
+            sessions.push(session);
+
+            // Avança um dia
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+    }
+
+    console.log("Sessões criadas:", sessions);
+    return sessions;
 }
+
 
 export async function getStudySessions(userId) {
     const user = await getUser(userId);
@@ -270,7 +315,6 @@ export async function getStudySessions(userId) {
     const sessions = user.calendar;
 
     return sessions;
-
 }
 
 export async function createReminder(userId, title, date) {
@@ -287,4 +331,14 @@ export async function loginUser(email, password) {
     const user = users.find(u => u.email === email && u.password === password);
     if (!user) throw new Error("Credenciais inválidas");
     return user;
+}
+
+export async function deleteStudySession(userId, sessionId) {
+    const user = await getUser(userId);
+    if (!user) throw new Error("Utilizador não encontrado.");
+    const sessionIndex = user.calendar.findIndex(s => s.id == sessionId);
+    if (sessionIndex === -1) throw new Error("Sessão não encontrada.");
+    user.calendar.splice(sessionIndex, 1);
+    return true;
+
 }

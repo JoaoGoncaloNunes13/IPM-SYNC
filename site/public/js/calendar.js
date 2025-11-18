@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         locale: 'pt',
+        events: '/getStudySessions',
         dateClick: async function (info) {
 
             // Buscar as sessões daquele dia
@@ -24,25 +25,47 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
                 sessions.forEach(s => {
                     const li = document.createElement('li');
-                    li.classList.add('session-item'); // se tiveres CSS de cards
-
-                    // hora já está separada, mas podes usar s.time se existir
+                    li.classList.add('session-item');
                     const hora = s.date.includes("T") ? s.date.split("T")[1] : (s.time || "Sem hora");
-
                     li.innerHTML = `
-                      <strong>${s.title}</strong>
-                     <div>Data: ${s.date.split("T")[0]}</div>
-                         <div>Hora: ${hora}</div>
-                         <div>Duração: ${s.duration ? s.duration + " min" : "Não definido"}</div>` ;
-
+            <div style="display:flex; justify-content: space-between; align-items:center;">
+                <strong>${s.title}</strong>
+                <button class="delete-btn" style="
+                    background: #ef4444;
+                    color: white;
+                    border: none;
+                    border-radius: 8px;
+                    padding: 4px 8px;
+                    cursor: pointer;
+                    font-size: 0.85rem;
+                ">Apagar</button>
+            </div>
+            <div>Data: ${s.date.split("T")[0]}</div>
+            <div>Hora: ${hora}</div>
+            <div>Duração: ${s.duration ? s.duration + " min" : "Não definido"}</div>
+        `;
                     list.appendChild(li);
+                    li.querySelector('.delete-btn').addEventListener('click', async () => {
+                        if (!confirm(`Deseja realmente apagar a sessão "${s.title}"?`)) return;
+
+                        try {
+                            const res = await fetch(`/deleteStudySession/${s.id}`, { method: 'DELETE' });
+                            if (res.ok) {
+                                li.remove(); // remove o li do DOM
+                                alert('Sessão apagada!');
+                                window.location.reload();
+                            } else {
+                                alert('Erro ao apagar sessão.');
+                            }
+                        } catch (err) {
+                            console.error(err);
+                            alert('Erro ao apagar sessão.');
+                        }
+                    });
                 });
             }
-
-
-            popup.style.display = "flex";  // abrir popup
+      popup.style.display = "flex";  // abrir popup
         }
-
     });
 
     calendar.render();
@@ -53,13 +76,21 @@ document.addEventListener('DOMContentLoaded', function () {
         const formData = new FormData(form);
 
         let date = formData.get('date');
+        let endDate = formData.get('endDate');
         const time = formData.get('time');
-        if (time) date += 'T' + time;
 
+        if (time){
+            date += 'T' + time;
+            if (endDate){
+                endDate += 'T' + time;
+            }
+        }
         const data = {
             title: formData.get('title'),
             date: date,
-            duration: formData.get('duration')
+            endDate: endDate,
+            duration: formData.get('duration'),
+
         };
 
         const res = await fetch('/createStudySession', {
@@ -71,20 +102,10 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         if (res.ok) {
-
             const result = await res.json();
-            console.log("Sessão criada:", result.session);
-
             alert("Sessão criada!");
-            form.reset();
-
-            // Atualiza o FullCalendar para mostrar a nova sessão
-            calendar.addEvent({
-                title: result.session.title,
-                start: result.session.date,
-                allDay: !time
-            });
             calendar.refetchEvents();
+            calendar.render();
         } else {
             alert("Erro ao criar sessão");
         }

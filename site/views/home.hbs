@@ -44,8 +44,10 @@
             <form id="studySessionForm" action="/createStudySession" method="POST">
                 <input type="text" name="title" placeholder="Título da Sessão" required>
                 <input type="date" name="date" required>
+                <input type="date" name="endDate">
                 <input type="time" name="time">
                 <input type="number" name="duration" placeholder="Duração (minutos)">
+                <input type="color" name="color" value="#3b82f6" title="Escolhe uma cor para a sessão">
                 <button type="submit">Criar Sessão</button>
             </form>
         </section>
