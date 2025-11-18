@@ -33,20 +33,10 @@
     <main class="main-content">
         <section class="calendar-container">
             <h2>Calendário</h2>
-            <div class="calendar-grid">
-                {{#each calendarDays}}
-                    <div class="calendar-day" onclick="showEvents('{{this.date}}')">
-                        <span class="day-number">{{this.day}}</span>
-                    </div>
-                {{/each}}
-            </div>
+            <div id="calendar"></div>
         </section>
 
-        <script>
-            function showEvents(date) {
-                alert("Eventos do dia " + date);
-            }
-        </script>
+
 
         <!-- Sessões de estudo -->
         <section class="study-sessions">

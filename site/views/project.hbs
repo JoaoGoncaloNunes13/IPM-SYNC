@@ -162,10 +162,11 @@
     let channelMessages = { geral: [] };*/
 
     function createChannel() {
-        window.createChannel = createChannel;
-        document.getElementById("create-channel-modal").classList.remove("hidden");
+        const modal = document.getElementById("newChannelModal");
+        if (modal) {
+            modal.style.display = "block";
+        }
     }
-
     function closeChannelModal() {
         document.getElementById("create-channel-modal").classList.add("hidden");
     }
@@ -357,6 +358,6 @@
         channelMessages[currentChannel].push(msgObj);
         loadMessages();
         input.value = "";
-    }*/
+    }
 </script>
 

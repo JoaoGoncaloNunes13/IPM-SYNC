@@ -18,15 +18,15 @@ export function initializeData() {
     if (users.length > 0 || servers.length > 0) return;
 
     users = [
-        {id: randomUUID(), name: "João Nunes", email: "joao@sync.com", password: "1234"},
-        {id: randomUUID(), name: "Madalena Alves", email: "madalena@sync.com", password: "1234"},
-        {id: randomUUID(), name: "Pedro Peres", email: "pedro@sync.com", password: "1234"},
-        {id: randomUUID(), name: "Ricardo Oliveira", email: "ricardo@sync.com", password: "1234"},
-        {id: randomUUID(), name: "Professora Teresa", email: "teresa@sync.com", password: "1234"},
-        {id: randomUUID(), name: "Fernando Torres", email: "fernando@gmail.com", password: "1234"},
-        {id: randomUUID(), name: "Miguel Gamboa", email: "miguel@gmail.com", password: "1234"},
-        {id: randomUUID(), name: "João Trindade", email: "joao@gmail.com", password: "1234"},
-        {id: randomUUID(), name: "Pedro Felix", email: "pedro@gmail.com", password: "1234"},
+        {id: randomUUID(), name: "João Nunes", email: "joao@sync.com", password: "1234", calendar: []},
+        {id: randomUUID(), name: "Madalena Alves", email: "madalena@sync.com", password: "1234", calendar: []},
+        {id: randomUUID(), name: "Pedro Peres", email: "pedro@sync.com", password: "1234", calendar: []},
+        {id: randomUUID(), name: "Ricardo Oliveira", email: "ricardo@sync.com", password: "1234",calendar: []},
+        {id: randomUUID(), name: "Professora Teresa", email: "teresa@sync.com", password: "1234",calendar: []},
+        {id: randomUUID(), name: "Fernando Torres", email: "fernando@gmail.com", password: "1234",calendar: []},
+        {id: randomUUID(), name: "Miguel Gamboa", email: "miguel@gmail.com", password: "1234",calendar: []},
+        {id: randomUUID(), name: "João Trindade", email: "joao@gmail.com", password: "1234",calendar: []},
+        {id: randomUUID(), name: "Pedro Felix", email: "pedro@gmail.com", password: "1234",calendar: []},
     ];
 
     servers = [
@@ -133,7 +133,8 @@ export async function createUser(userToCreate) {
                 id: randomUUID(),
                 name: userToCreate.name,
                 email: userToCreate.email,
-                password: userToCreate.password
+                password: userToCreate.password,
+                calendar: []
             };
         users.push(newUser);
         console.log(users);
@@ -252,13 +253,21 @@ export async function getMessages(serverId, channelType, channelId) {
 // lembretes e sessoes de estudo
 
 export async function createStudySession(userId, title, date, duration) {
-    const user = getUser(userId);
+    const user = await getUser(userId);
     if (!user) throw new Error("Utilizador não encontrado.");
-
-    if (!user.calendar) user.calendar = [];
     const session = {id: user.calendar.length, title, date, duration, type: "sessão"};
     user.calendar.push(session);
     return session;
+}
+
+export async function getStudySessions(userId) {
+    const user = await getUser(userId);
+    if (!user) throw new Error("Utilizador não encontrado.");
+    if (!user.calendar) return [];
+    const sessions = user.calendar;
+
+    return sessions;
+
 }
 
 export async function createReminder(userId, title, date) {

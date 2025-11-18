@@ -225,36 +225,6 @@ body {
     gap: 30px;
     background-color: #fff;
 }
-
-/* ------------------ CALENDÁRIO ------------------ */
-.calendar-container {
-    background-color: #f5f5f5;
-    padding: 20px;
-    border-radius: 10px;
-}
-
-.calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 10px;
-}
-
-.calendar-day {
-    height: 80px;
-    background-color: #fff;
-    border-radius: 6px;
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
-    padding: 5px;
-    cursor: pointer;
-    border: 1px solid #ddd;
-    transition: background-color 0.2s;
-}
-.calendar-day:hover {
-    background-color: #e0e0ff;
-}
-
 .day-number {
     font-weight: bold;
     color: #333;
@@ -524,3 +494,93 @@ body {
     font-weight: bold;
     cursor: pointer;
 }
+
+
+/* SLOGAN INICIAL */
+.video-box {
+    width: 800px;          /* largura da caixa */
+    height: 450px;         /* altura da caixa (proporção 16:9) */
+    background-color: #dbe4ee;
+    border-radius: 15px;
+    margin: 40px auto 0;   /* centra automaticamente */
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+}
+
+/* ================== CALENDÁRIO ================== */
+
+/* Container geral da secção */
+.calendar-container {
+    width: 100%;
+    max-width: 1000px;
+    margin-left: 0;               /* Alinhado à esquerda */
+    padding: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Título */
+.calendar-container h2 {
+    font-size: 26px;
+    font-weight: 600;
+    color: #222;
+    margin-left: 5px;
+}
+
+/* Caixa do calendário */
+#calendar {
+    width: 200%;                  /* Ocupa toda a largura da área */
+    max-width: 700px;             /* Largura agradável */
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 14px;
+
+    border: 1px solid #e5e7eb;    /* Cinza claro elegante */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+
+}
+
+/* ================== ESTILOS FULLCALENDAR ================== */
+
+/* Cabeçalho (setas + título) */
+.fc-toolbar-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #111;
+}
+
+/* Botões de navegação */
+.fc-button {
+    background: #2563eb !important;  /* Azul mais moderno */
+    border: none !important;
+    border-radius: 6px !important;
+}
+
+.fc-button:hover {
+    background: #1e4fcf !important;
+}
+
+/* Cabeçalho dos dias da semana */
+.fc-col-header-cell-cushion {
+    padding: 8px 0;
+    font-weight: 600;
+    color: #3a3a3a;
+}
+
+/* Dias */
+.fc-daygrid-day {
+    border: 1px solid #f0f0f0 !important;
+}
+
+.fc-daygrid-day:hover {
+    background: #f7faff !important;
+    cursor: pointer;
+}
+
+/* Dia atual */
+.fc-day-today {
+    background: #e9f1ff !important;
+    border: 1px solid #3b82f6 !important;
+}
+
