@@ -18,7 +18,10 @@ export function initializeData() {
     if (users.length > 0 || servers.length > 0) return;
 
     users = [
-        {id: randomUUID(), name: "João Nunes", email: "joao@sync.com", password: "1234", calendar: []},
+        {id: randomUUID(), name: "João Nunes", email: "joao@sync.com", password: "1234", calendar: [
+                { "id": "...", "title": "Matemática", "date": "2025-11-18", "time": "10:00", "duration": 60 },
+                { "id": "...", "title": "História", "date": "2025-11-18", "time": "11:30", "duration": 45 }
+            ]},
         {id: randomUUID(), name: "Madalena Alves", email: "madalena@sync.com", password: "1234", calendar: []},
         {id: randomUUID(), name: "Pedro Peres", email: "pedro@sync.com", password: "1234", calendar: []},
         {id: randomUUID(), name: "Ricardo Oliveira", email: "ricardo@sync.com", password: "1234",calendar: []},

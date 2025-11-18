@@ -1,9 +1,39 @@
 /* ================== GLOBAL ================== */
 body {
     margin: 0;
-    font-family: 'Segoe UI', Arial, sans-serif;
+    font-family: "Poppins", sans-serif;
     background-color: #f4f6f8;
     color: #333;
+}
+:root {
+    --primary-color: #4F46E5; /* roxo */
+    --secondary-color: #6366F1; /* azul suave */
+    --background-color: #F9FAFB; /* fundo neutro */
+    --text-color: #111827; /* texto escuro */
+    --accent-color: #F59E0B; /* destaque laranja */
+}
+
+h1, h2, h3 {
+    font-family: 'Poppins', sans-serif;
+}
+.card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+button {
+    transition: all 0.3s ease;
+}
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
 /* ================== NAVBAR ================== */
@@ -583,4 +613,11 @@ body {
     background: #e9f1ff !important;
     border: 1px solid #3b82f6 !important;
 }
+.fc-event {
+    background-color: var(--primary-color);
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    color: white;
+}
+
 

@@ -30,7 +30,6 @@ router.post('/createStudySession', async (req, res) => {
     try {
         // Chama a tua função do data module
         const session = await createStudySession(req.session.userId, title, date, duration);
-
         console.log("Sessão de estudo criada:", session);
         res.json({ success: true, session });
     } catch (err) {
@@ -49,9 +48,10 @@ router.get('/getStudySessions', async (req, res) => {
         const events = sessionEvents.map(s => ({
             title: s.title,
             start: s.date,
-            allDay: true
+            allDay: !s.time
         }));
         console.log("Eventos formatados:", events);
+
 
         res.json(events)
 
@@ -60,9 +60,30 @@ router.get('/getStudySessions', async (req, res) => {
         console.error(err);
         res.status(500).send("Erro ao obter as sessões");
     }
-
-    res.json(events);
 });
+
+
+    router.get('/getStudySessionsByDate', async (req, res) => {
+        const user =  await getUser(req.session.userId);
+        if (!user) return res.json([]);
+
+        const date = req.query.date; // YYYY-MM-DD
+
+        try {
+            const sessions = await data.getStudySessions(user.id);
+
+            // filtrar apenas sessões daquele dia
+            const filtered = sessions.filter(s =>
+                s.date.startsWith(date)  // funciona tanto para YYYY-MM-DD como YYYY-MM-DDTHH:mm
+            );
+            console.log("Sessões filtradas para", date, ":", filtered);
+
+            res.json(filtered);
+        } catch (err) {
+            console.error(err);
+            res.status(500).send("Erro ao obter sessões");
+        }
+    });
 
 
 export default router;
