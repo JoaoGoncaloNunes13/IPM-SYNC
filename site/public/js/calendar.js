@@ -77,8 +77,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         let date = formData.get('date');
         let endDate = formData.get('endDate');
+        if (endDate && endDate < date) {
+            alert("A data final não pode ser menor que a data inicial!");
+            return;
+        }
         const time = formData.get('time');
-
         if (time){
             date += 'T' + time;
             if (endDate){
@@ -90,6 +93,8 @@ document.addEventListener('DOMContentLoaded', function () {
             date: date,
             endDate: endDate,
             duration: formData.get('duration'),
+            color: formData.get('color'),
+            time: time
 
         };
 

@@ -20,7 +20,7 @@ router.get('/home', (req, res) => {
 
 router.post('/createStudySession', async (req, res) => {
     if (!req.session.userId) return res.redirect('/');
-    const {title, date,endDate, duration} = req.body;
+    const {title, date,endDate, duration, color, time} = req.body;
     console.log("Dados recebidos:", req.body);
 
     if (!title || !date) {
@@ -29,7 +29,8 @@ router.post('/createStudySession', async (req, res) => {
 
     try {
         // Chama a tua função do data module
-        const sessions = await createStudySessions(req.session.userId, title, date,endDate, duration);
+        const sessions = await createStudySessions(req.session.userId, title, date,endDate, duration, color, time);
+        console.log("Sessões criadas depois de se fazer o fetch:", sessions);
         res.json({success: true, sessions});
     } catch (err) {
         console.error(err);
@@ -47,8 +48,10 @@ router.get('/getStudySessions', async (req, res) => {
         const events = sessionEvents.map(s => ({
             id: s.id,
             title: s.title,
-            start: s.time ? `${s.date}T${s.time}` : s.date,  // ISO string completa
-            allDay: !s.time
+            start: s.time ? `${s.date}T${s.time}` : s.date,
+            allDay: !s.time,
+            color: s.color || '#3788d8',
+
         }));
         res.json(events)
 

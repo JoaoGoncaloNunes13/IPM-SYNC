@@ -255,11 +255,12 @@ export async function getMessages(serverId, channelType, channelId) {
 
 // lembretes e sessoes de estudo
 
-export async function createStudySessions(userId, title, date, endDate, duration, time,color) {
+export async function createStudySessions(userId, title, date, endDate, duration,color,time) {
     const user = await getUser(userId);
     if (!user) throw new Error("Utilizador não encontrado.");
 
     const sessions = [];
+    console.log("USERDATA COLOR = ", color);
 
     // Constrói ISO completa da primeira sessão
     const firstSessionDate = time ? `${date}T${time}` : date;
