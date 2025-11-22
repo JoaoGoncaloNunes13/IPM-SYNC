@@ -575,8 +575,8 @@ button:hover {
 
 /* LOGO SYNC */
 .logo-image {
-    width: 200px;
-    height: 200px;
+    width: 150px;
+    height: 150px;
     border-radius: 50%;
     object-fit: cover;
     z-index: 10;
@@ -593,24 +593,24 @@ button:hover {
 
 @keyframes appear {
     0% { 
-        transform: translateX(120%);
+        transform: translateX(150%);
         opacity: 0; 
     }
     100% {
-        transform: translateX(120%);
+        transform: translateX(150%);
         opacity: 1; 
     }
 }
 
 @keyframes slideLeft {
-    0% { transform: translateX(120%); }
+    0% { transform: translateX(150%); }
     100% { transform: translateX(0); }
 }
 
 /* ANIMAÇÃO SLOGAN */
 .animated-slogan-move {
     opacity: 0; 
-    transform: translateX(-80px);
+    transform: translateX(-50px);
     animation: slideOut 1s ease-out forwards;
     animation-delay: 1.2s;
 }
@@ -618,7 +618,7 @@ button:hover {
 @keyframes slideOut {
     0% {
         opacity: 0;
-        transform: translateX(-80px);
+        transform: translateX(-50px);
     }
     100% {
         opacity: 1;
