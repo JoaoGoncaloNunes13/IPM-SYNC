@@ -202,7 +202,7 @@ export async function getServer(idServer) {
 //criação de canais
 
 export async function createChannel(serverId, type, name) {  //alterar para depois cada tipo de canal que temos
-    const server = getServer(serverId);
+    const server = await getServer(serverId);
     let channel = null;
     if (!server) throw new Error("Servidor não encontrado.");
     if (!server.channels[type]) throw new Error("Tipo de canal inválido.");

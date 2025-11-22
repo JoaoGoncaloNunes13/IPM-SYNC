@@ -29,23 +29,27 @@ router.get('/servers/:serverId/members', async (req, res) => {
     }
 });
 
-//Criar um servidor
-router.post("/servers", async (req, res) => {
+// Criar um servidor
+router.post("/createServer", async (req, res) => {
     try {
-        const {name,channels} = req.body;
         const ownerId = req.session.userId;
+        const { name, grupos, tarefas, calendario } = req.body;
+
+        const channels = {
+            grupos: grupos ? [] : [],
+            tarefas: tarefas ? [] : [],
+            calendario: calendario ? [] : []
+        };
 
         const newServer = await data.createServer(name, ownerId, channels);
 
-
-        console.log(data.servers);
-
         res.json(newServer);
-        
+
     } catch (err) {
-        res.status(400).json({error: err.message});
+        res.status(400).json({ error: err.message });
     }
 });
+
 
 
 export default router;

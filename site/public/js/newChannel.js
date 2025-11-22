@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const modal = document.getElementById("newChannelModal");
+    const modal = document.getElementById("create-channel-modal");
     if (!modal) return; // evita erro se modal não existir
 
     const close = modal.querySelector(".close");

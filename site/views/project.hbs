@@ -162,13 +162,17 @@
     let channelMessages = { geral: [] };*/
 
     function createChannel() {
-        const modal = document.getElementById("newChannelModal");
+        const modal = document.getElementById("create-channel-modal");
         if (modal) {
+            modal.classList.remove("hidden");
             modal.style.display = "block";
         }
     }
+
     function closeChannelModal() {
-        document.getElementById("create-channel-modal").classList.add("hidden");
+        const modal = document.getElementById("create-channel-modal");
+        modal.classList.add("hidden");
+        modal.style.display = "none";
     }
 
     async function submitNewChannel() {
@@ -358,6 +362,26 @@
         channelMessages[currentChannel].push(msgObj);
         loadMessages();
         input.value = "";
+    }
+    function addChannelToSidebar(type, channel) {
+        const list = document.querySelector(`ul.channel-list:nth-of-type(${getListIndex(type)})`);
+        if (!list) return;
+
+        const li = document.createElement("li");
+        li.className = "channel-item";
+        li.innerHTML = `
+            <span onclick="openChannel('${type}', '${channel.id}', '${channel.name}')">#${channel.name}</span>
+            <button class="delete-channel" onclick="deleteChannel('${channel.id}')">×</button>
+        `;
+
+        list.appendChild(li);
+    }
+
+    function getListIndex(type) {
+        if (type === "texto") return 1;
+        if (type === "grupos") return 2;
+        if (type === "tarefas") return 3;
+        if (type === "calendario") return 4;
     }
 </script>
 

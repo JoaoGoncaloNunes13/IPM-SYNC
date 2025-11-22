@@ -31,42 +31,35 @@ document.addEventListener("DOMContentLoaded", () => {
     form.addEventListener("submit", async function (e) {
         e.preventDefault();
 
-        const serverName = document.getElementById("serverName").value;
-        const channels = {
-            grupos: document.getElementById("grupos").checked ? {
-                id: randomUUID(),
-                name: "Grupos",
-                grupos: []
-            } : null,
-            tarefas: document.getElementById("tarefas").checked ? {
-                id: randomUUID(),
-                name: "Tarefas",
-                tasks: []
-            } : null,
-            calendario: document.getElementById("calendario").checked ? {
-                id: randomUUID(),
-                name: "Calendário",
-                events: []
-            } : null,
-        };
+        const name = document.getElementById("serverName").value;
 
-        const response = await fetch("/servers", {
+        const grupos = document.getElementById("grupos").checked;
+        const tarefas = document.getElementById("tarefas").checked;
+        const calendario = document.getElementById("calendario").checked;
+
+        const response = await fetch("/createServer", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify( { name: serverName,channels })
+            body: JSON.stringify({ 
+                name,
+                grupos,
+                tarefas,
+                calendario
+            })
         });
+
         if (!response.ok) {
             alert("Erro ao criar servidor: " + (await response.text()));
-        }
-        if (response.ok) {
-            alert("Servidor criado com sucesso!");
+            return;
         }
 
+        const newServer = await response.json();
 
-        form.reset();
         closeCreateServerModal();
-        window.location.reload();
+
+        window.location.href = `/servers/${newServer.id}`;
     });
+
 
     // Fecha modal ao clicar fora do conteúdo
     const modal = document.getElementById("createServerModal");
