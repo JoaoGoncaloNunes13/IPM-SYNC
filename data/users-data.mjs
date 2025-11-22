@@ -393,7 +393,12 @@ export async function addGroupsToChannel(serverId, channelId, groups) {
         groupsToBeAdded.push({
             id: channel.groups.length + i,
             name: `${groups.name} ${i + 1}`,
-            members: []
+            members: [],
+            channels: {
+                texto: [],
+                tarefas: [],
+                calendario: []
+            }
         });
     }
 

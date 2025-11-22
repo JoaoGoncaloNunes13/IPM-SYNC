@@ -402,7 +402,7 @@
                     groupCard.style.transform = "translateY(0)";
                     groupCard.style.boxShadow = "0 2px 6px rgba(0,0,0,0.15)";
                 };
-
+                groupCard.onclick = () => openGroup(t.id);
                 groupCard.innerHTML = `
                 <p style="margin: 4px 0;"><strong>Nome:</strong> ${t.name || "–"}</p>
                 <p style="margin: 4px 0;"><strong>Participantes:</strong></p>
@@ -438,6 +438,19 @@
 
         modal.classList.add("hidden");
         modal.style.display = "none";
+    }
+
+    function openGroup(groupId) {
+        const serverId = window.SERVER_ID;
+        const channelId = window.currentGroupsChannel;
+
+        if (!channelId) {
+            alert("Nenhum canal de grupos selecionado");
+            return;
+        }
+
+        // Redireciona para página do grupo
+        window.location.href = `/servers/${serverId}/grupos/${channelId}/${groupId}`;
     }
 
     function renderCalendarChannel(container, data) {

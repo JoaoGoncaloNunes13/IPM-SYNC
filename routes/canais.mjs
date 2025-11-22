@@ -85,5 +85,32 @@ router.post('/servers/:serverId/grupos/:channelId', async (req, res) => {
     }
 });
 
+// Página de visualização de um grupo específico
+router.get("/servers/:serverId/grupos/:channelId/:groupId", async (req, res) => {
+    const serverId = parseInt(req.params.serverId);
+    const channelId = parseInt(req.params.channelId);
+    const groupId = parseInt(req.params.groupId);
+
+    try {
+        const server = await data.getServer(serverId);
+
+        const channel = server.channels.grupos.find(c => c.id === channelId);
+        if (!channel) return res.status(404).send("Canal não encontrado");
+
+        const group = channel.groups.find(g => g.id === groupId);
+        if (!group) return res.status(404).send("Grupo não encontrado");
+
+        res.render("group", {
+            title: group.name,
+            group,
+            server
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Erro ao carregar grupo");
+    }
+});
+
 
 export default router;

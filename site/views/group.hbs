@@ -1,0 +1,26 @@
+<div class="group-page">
+
+    <aside class="group-sidebar">
+        <h2>{{group.name}}</h2>
+
+        <h3>Canais</h3>
+        <ul>
+            {{#each group.channels.texto}}
+                <li onclick="openGroupChannel('texto', '{{this.id}}')">#{{this.name}}</li>
+            {{/each}}
+        </ul>
+
+        <h3>Membros</h3>
+        <ul>
+            {{#each group.members}}
+                <li>{{this.name}}</li>
+            {{/each}}
+        </ul>
+    </aside>
+
+    <main class="group-main">
+        <h3 id="group-current-channel">Seleciona um canal</h3>
+        <div id="group-channel-content"></div>
+    </main>
+
+</div>
