@@ -545,7 +545,7 @@ button:hover {
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    margin-top: 80px;
+    margin-top: 60px;
     gap: 20px;
 }
 .slogan-text {
@@ -565,8 +565,8 @@ button:hover {
 }
 
 .video-box {
-    width: 800px;          /* largura da caixa */
-    height: 450px;         /* altura da caixa (proporção 16:9) */
+    width: 35%;          /* largura da caixa */
+    aspect-ratio: 16/9;         /* mantém proporção 16:9 */
     background-color: #dbe4ee;
     border-radius: 15px;
     margin: 40px auto 0;   /* centra automaticamente */
