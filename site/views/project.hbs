@@ -187,6 +187,9 @@
             if (type === "tarefas") {
                 window.currentTaskChannel = channelId;
             }
+            if (type === "grupos") {
+                window.currentGroupsChannel = channelId;
+            }
 
             console.log("Abrindo canal:", type, channelId);
 
@@ -381,7 +384,7 @@
             groupsList.style.gap = "12px";
             groupsList.style.marginTop = "16px";
 
-            groupsList.forEach(t => {
+            groups.forEach(t => {
                 const groupCard = document.createElement("div");
                 groupCard.className = "group-card";
                 groupCard.style.padding = "12px";
@@ -399,7 +402,6 @@
                 };
 
                 groupCard.innerHTML = `
-                <h3 style="margin:0 0 6px 0; font-size: 18px; color: #333;">${t.title}</h3>
                 <p style="margin: 4px 0;"><strong>Nome:</strong> ${t.name || "–"}</p>
                 <p style="margin: 4px 0;"><strong>Participantes:</strong></p>
             `;

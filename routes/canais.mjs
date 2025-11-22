@@ -61,5 +61,29 @@ router.post('/servers/:serverId/tarefas/:channelId', async (req, res) => {
     }
 });
 
+// Criar novos grupos num canal
+router.post('/servers/:serverId/grupos/:channelId', async (req, res) => {
+    const serverId = parseInt(req.params.serverId);
+    const channelId = parseInt(req.params.channelId);
+    const { name, quantity } = req.body;
+
+    if (!name || !quantity) {
+        return res.status(400).json({ error: "Nome e quantidade são obrigatórios" });
+    }
+
+    try {
+        await data.addGroupsToChannel(serverId, channelId, { name, quantity });
+
+        // Pega o canal atualizado
+        const updatedChannel = await data.getChannel(serverId, 'grupos', channelId);
+
+        res.json(updatedChannel);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 
 export default router;

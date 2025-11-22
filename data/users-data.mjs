@@ -367,3 +367,40 @@ export async function addTaskToChannel(serverId, channelId, task) {
     return task;
 }
 
+export async function addGroupsToChannel(serverId, channelId, groups) {
+    const server = await getServer(serverId);
+
+    // garante que há array de canais de grupos
+    if (!server.channels.grupos) {
+        throw new Error("Não existem canais de grupos neste servidor.");
+    }
+
+    // encontra o canal de grupos certo
+    const channel = server.channels.grupos.find(c => c.id === channelId);
+
+    if (!channel) {
+        throw new Error(`Canal de grupos com id ${channelId} não encontrado.`);
+    }
+
+    // garante que o array groups existe dentro do canal
+    if (!channel.groups) {
+        channel.groups = [];
+    }
+
+    const groupsToBeAdded = [];
+
+    for (let i = 0; i < groups.quantity; i++) {
+        groupsToBeAdded.push({
+            id: channel.groups.length + i,
+            name: `${groups.name} ${i + 1}`,
+            members: []
+        });
+    }
+
+    // adiciona os grupos ao canal
+    channel.groups.push(...groupsToBeAdded);
+
+    return channel;
+}
+
+
