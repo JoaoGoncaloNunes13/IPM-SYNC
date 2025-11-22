@@ -20,6 +20,14 @@
 </div>
 
 <script>
+    function changeQty(qty) {
+        const qtyInput = document.getElementById("groups-qty");
+        let currentQty = parseInt(qtyInput.value) || 1;
+        currentQty += qty;
+        if (currentQty < 1) currentQty = 1;
+        qtyInput.value = currentQty;
+    }
+
     function openCreateGroupsModal() {
         document.getElementById("create-groups-modal").classList.remove("hidden");
     }
