@@ -184,6 +184,10 @@
             const currentEl = ensureChatHeader();
             if (currentEl) currentEl.innerText = "#" + (channelName || channelId);
 
+            if (type === "tarefas") {
+                window.currentTaskChannel = channelId;
+            }
+
             console.log("Abrindo canal:", type, channelId);
 
             const res = await fetch(`/servers/${window.SERVER_ID}/${type}/${channelId}`);
@@ -268,28 +272,88 @@
     }
 
     function renderTaskChannel(container, data) {
-        if (!data.tasks || data.tasks.length === 0) {
-            container.innerHTML = `
-                <div class="empty-block">
-                    <button onclick="openCreateTaskModal()">+ Criar Tarefa</button>
-                </div>
-            `;
-            return;
-        }
+        container.innerHTML = ""; // limpa tudo antes
+        const tasks = data.tasks || data.tarefas || [];
 
-        container.innerHTML = data.tasks.map(t => `
-            <div class="task-card">
-                <h3>${t.title}</h3>
-                <p>${t.description}</p>
-                <small>Prazo: ${t.deadline}</small>
-                <small>Responsável: ${t.assignedTo}</small>
-            </div>
-        `).join('');
+        // Botão de criar nova tarefa
+        const createBtn = document.createElement("div");
+        createBtn.className = "empty-block";
+        createBtn.innerHTML = `
+        <button style="
+            padding: 8px 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        " onclick="openCreateTaskModal()">+ Criar Tarefa</button>`;
+        container.appendChild(createBtn);
+
+        if (tasks.length > 0) {
+            const taskList = document.createElement("div");
+            taskList.className = "task-list";
+            taskList.style.display = "grid";
+            taskList.style.gridTemplateColumns = "repeat(auto-fit, minmax(250px, 1fr))";
+            taskList.style.gap = "12px";
+            taskList.style.marginTop = "16px";
+
+            tasks.forEach(t => {
+                const taskCard = document.createElement("div");
+                taskCard.className = "task-card";
+                taskCard.style.padding = "12px";
+                taskCard.style.borderRadius = "10px";
+                taskCard.style.boxShadow = "0 2px 6px rgba(0,0,0,0.15)";
+                taskCard.style.backgroundColor = t.color || "#fefefe";
+                taskCard.style.transition = "transform 0.2s, box-shadow 0.2s";
+                taskCard.onmouseover = () => {
+                    taskCard.style.transform = "translateY(-2px)";
+                    taskCard.style.boxShadow = "0 4px 12px rgba(0,0,0,0.25)";
+                };
+                taskCard.onmouseout = () => {
+                    taskCard.style.transform = "translateY(0)";
+                    taskCard.style.boxShadow = "0 2px 6px rgba(0,0,0,0.15)";
+                };
+
+                taskCard.innerHTML = `
+                <h3 style="margin:0 0 6px 0; font-size: 18px; color: #333;">${t.title}</h3>
+                <p style="margin: 4px 0;"><strong>Descrição:</strong> ${t.description || "–"}</p>
+                <p style="margin: 4px 0;"><strong>Prazo:</strong> ${t.deadline}</p>
+                <p style="margin: 4px 0;"><strong>Responsável:</strong> ${t.assignedTo}</p>
+                <p style="margin: 4px 0;"><strong>Tipo:</strong> ${t.type || "tarefa"}</p>
+            `;
+
+                taskList.appendChild(taskCard);
+            });
+
+            container.appendChild(taskList);
+        } else {
+            const emptyBlock = document.createElement("div");
+            emptyBlock.className = "empty-block";
+            emptyBlock.style.marginTop = "16px";
+            emptyBlock.style.textAlign = "center";
+            emptyBlock.style.color = "#777";
+            emptyBlock.innerHTML = `<p>Nenhuma tarefa criada ainda.</p>`;
+            container.appendChild(emptyBlock);
+        }
     }
 
     function openCreateTaskModal() {
-        alert("Abrir modal de criar tarefa — depois implementamos o modal real");
+        const modal = document.getElementById("create-task-modal");
+        if (!modal) return;
+
+        modal.classList.remove("hidden");
+        modal.style.display = "block";
     }
+
+    function closeTaskModal() {
+        const modal = document.getElementById("create-task-modal");
+        if (!modal) return;
+
+        modal.classList.add("hidden");
+        modal.style.display = "none";
+    }
+
 
     function renderGroupChannel(container, data) {
         const groups = data.groups || []; // garante que sempre é um array

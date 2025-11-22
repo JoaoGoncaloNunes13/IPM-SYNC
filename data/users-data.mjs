@@ -346,3 +346,24 @@ export async function deleteStudySession(userId, sessionId) {
     return true;
 
 }
+
+export async function addTaskToChannel(serverId, channelId, task) {
+    const server = await getServer(serverId);
+    const channel = server.channels.tarefas.find(c => c.id === channelId);
+    channel.tarefas.push(task);
+
+    // Atualiza calendário se existir
+    const calendarChannel = server.channels.calendario[0]; // assume 1 canal
+    if (calendarChannel) {
+        calendarChannel.events = calendarChannel.events || [];
+        calendarChannel.events.push({
+            id: calendarChannel.events.length,
+            title: task.title,
+            date: task.deadline,
+            type: 'task'
+        });
+    }
+
+    return task;
+}
+

@@ -1,5 +1,6 @@
 import express from 'express';
 import * as data from '../data/users-data.mjs';
+import {addTaskToChannel} from "../data/users-data.mjs";
 
 
 const router = express.Router();
@@ -27,5 +28,36 @@ router.post('/servers/:serverId/channels', async (req, res) => {
         res.status(400).send(err.message);
     }
 });
+
+// Criar nova tarefa num canal
+router.post('/servers/:serverId/tarefas/:channelId', async (req, res) => {
+    const serverId = parseInt(req.params.serverId);
+    const channelId = parseInt(req.params.channelId);
+
+    const { title, description, deadline, assignedTo } = req.body;
+
+    if (!title || !deadline || !assignedTo) {
+        return res.status(400).json({ error: "Título, data e responsável são obrigatórios" });
+    }
+
+    try {
+        // Supondo que tens uma função no data.js para adicionar tarefas
+        const newTask = await data.addTaskToChannel(serverId, channelId, {
+            title,
+            description,
+            deadline,
+            assignedTo
+        });
+
+        // Retorna o canal atualizado (para renderizar no frontend)
+        const updatedChannel = await data.getChannel(serverId, 'tarefas', channelId);
+        res.json(updatedChannel);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 
 export default router;
