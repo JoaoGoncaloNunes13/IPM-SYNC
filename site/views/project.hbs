@@ -17,7 +17,7 @@
         <ul class="channel-list">
             {{#each project.channels.grupos}}
                 <li class="channel-item">
-                    <span onclick="openChannel('grupos', '{{this.id}}')">#{{this.name}}</span>
+                    <span onclick="openChannel('grupos', '{{this.id}}', '{{this.name}}')">#{{this.name}}</span>
                     <button class="delete-channel" onclick="deleteChannel('{{this.id}}')">×</button>
                 </li>
             {{/each}}
@@ -65,22 +65,6 @@
         <div class="chat-header">
             <h3 id="current-channel">Bem vindo</h3>
         </div>
-
-        {{!-- <div id="chat-messages" class="chat-messages">
-            <div class="message">
-                <span class="author">Sistema:</span>
-                <span class="content">Bem-vindo ao canal #geral!</span>
-            </div>
-        </div>
-
-        <div class="chat-input-container">
-            <input
-                    id="chat-input"
-                    class="chat-input"
-                    placeholder="Escreve uma mensagem..."
-                    onkeypress="sendMessage(event)"
-            />
-        </div> --}}
     </main>
 
 </div>
@@ -112,54 +96,38 @@
 
     async function addMember() {
         alert("Ainda não é possível adicionar membros.");
-        /*const name = prompt("Nome do novo membro:");
-        if (!name) return;
 
-        const serverId = window.SERVER_ID;
-
-        try {
-            const response = await fetch(`/servers/${serverId}/validate-member`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: name })
-            });
-
-            if (!response.ok) {
-                const msg = await response.text();
-                alert("Utilizador inválido: " + msg);
-                return;
-            }
-
-            const data = await response.json();
-            if (data.valid) {
-                const ul = document.getElementById("member-list");
-                const li = document.createElement("li");
-                li.className = "member-item";
-                li.innerHTML = `
-                    <span>${name}</span>
-                    <button class="remove-member" onclick="removeMember('${name}')">×</button>
-                `;
-                ul.appendChild(li);
-            }
-
-        } catch (err) {
-            console.error(err);
-            alert("Erro ao validar utilizador.");
-        }*/
     }
 
     function removeMember(name) {
         alert("Ainda não é possível remover membros.");
-        /*if (!confirm(`Remover membro ${name}?`)) return;
 
-        document.querySelectorAll(".member-item").forEach(member => {
-            if (member.textContent.includes(name)) member.remove();
-        });*/
     }
 
-    // Chat e canais
-    /*let currentChannel = "geral";
-    let channelMessages = { geral: [] };*/
+    /* --- Garante que existe o header e o h3#current-channel --- */
+    function ensureChatHeader() {
+        let main = document.querySelector(".project-main");
+        if (!main) return null;
+
+        let header = main.querySelector(".chat-header");
+        if (!header) {
+            header = document.createElement("div");
+            header.className = "chat-header";
+            header.innerHTML = `<h3 id="current-channel">Bem vindo</h3>`;
+            main.insertBefore(header, main.firstChild);
+        } else {
+            let h = header.querySelector("#current-channel");
+            if (!h) {
+                h = document.createElement("h3");
+                h.id = "current-channel";
+                h.textContent = "Bem vindo";
+                header.appendChild(h);
+            }
+        }
+        return main.querySelector("#current-channel");
+    }
+
+
 
     function createChannel() {
         const modal = document.getElementById("create-channel-modal");
@@ -207,80 +175,80 @@
         closeChannelModal();
     }
 
-
-    /*async function createChannel() {
-        const type = prompt("Tipo de canal (texto, tarefas, grupos, calendario):");
-
-        const validTypes = ["texto", "tarefas", "grupos", "calendario"];
-        if (!validTypes.includes(type)) {
-            alert("Tipo inválido! Use: texto, tarefas, grupos, calendario");
-            return;
-        }
-
-        const name = prompt("Nome do novo canal:");
-        if (!name) return;
-
-        // POST para o backend
-        const res = await fetch(`/servers/${window.SERVER_ID}/channels`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ type, name })
-        });
-
-        if (!res.ok) {
-            alert("Erro ao criar canal!");
-            return;
-        }
-
-        const channel = await res.json();  // { id, name }
-
-        // Adicionar o canal à sidebar
-        //addChannelToSidebar(type, channel);
-
-        // Abrir canal automaticamente
-        openChannel(type, channel.id);
-    }*/
-
-    /*function deleteChannel(name) {
-        alert("Ainda não é possível remover canais.");
-        /*if (!confirm(`Apagar canal #${name}?`)) return;
-
-        delete channelMessages[name];
-
-        document.querySelectorAll(".channel-item").forEach(ch => {
-            if (ch.textContent.includes("#" + name)) ch.remove();
-        });
-
-        if (currentChannel === name) {
-            currentChannel = null;
-            document.getElementById("chat-messages").innerHTML = "";
-            document.getElementById("current-channel").textContent = "Canal apagado";
-        }*/
-    
-
+    /* --- openChannel (segura) --- */
     async function openChannel(type, channelId, channelName) {
-        //window.CURRENT_CHANNEL = { type, channelId };
+        try {
+            console.log("Canal atual:", type, channelId, channelName);
 
-        document.getElementById("current-channel").innerText = "#" + channelName;
+            // garante header seguro
+            const currentEl = ensureChatHeader();
+            if (currentEl) currentEl.innerText = "#" + (channelName || channelId);
 
-        const res = await fetch(`/servers/${window.SERVER_ID}/${type}/${channelId}`);
+            console.log("Abrindo canal:", type, channelId);
 
-        const channelData = await res.json();
+            const res = await fetch(`/servers/${window.SERVER_ID}/${type}/${channelId}`);
+            if (!res.ok) {
+                console.error("Erro ao carregar canal:", await res.text());
+                renderError("Erro ao carregar canal.");
+                return;
+            }
 
-        renderChannel(type, channelData);
+            const channelData = await res.json();
+            renderChannel(type, channelData);
+        } catch (err) {
+            console.error(err);
+            renderError("Erro ao abrir o canal.");
+        }
     }
 
-    //mostra o conteudo do canal
+
+    /* --- renderChannel: não apaga o header; escreve só em #channel-content --- */
     function renderChannel(type, data) {
-        const main = document.querySelector(".project-main");
-        main.innerHTML = "";  
+        // garante header
+        ensureChatHeader();
 
-        if (type === "texto") renderTextChannel(main, data);
-        if (type === "tarefas") renderTaskChannel(main, data);
-        if (type === "grupos") renderGroupChannel(main, data);
-        if (type === "calendario") renderCalendarChannel(main, data);
+        const main = document.querySelector(".project-main");
+        if (!main) return;
+
+        // cria (ou reutiliza) o content container onde vamos injectar o conteúdo do canal
+        let content = main.querySelector("#channel-content");
+        if (!content) {
+            content = document.createElement("div");
+            content.id = "channel-content";
+            // coloca logo abaixo do header
+            const header = main.querySelector(".chat-header");
+            if (header && header.nextSibling) main.insertBefore(content, header.nextSibling);
+            else main.appendChild(content);
+        }
+
+        // limpa só o content (não o header)
+        content.innerHTML = "";
+
+        if (type === "texto") {
+            renderTextChannel(content, data);
+        } else if (type === "tarefas") {
+            renderTaskChannel(content, data);
+        } else if (type === "grupos") {
+            renderGroupChannel(content, data);
+        } else if (type === "calendario") {
+            renderCalendarChannel(content, data);
+        } else {
+            content.innerHTML = `<p>Tipo de canal desconhecido</p>`;
+        }
     }
 
+    /* --- pequeno helper de erro --- */
+    function renderError(msg) {
+        const main = document.querySelector(".project-main");
+        if (!main) return;
+        let content = main.querySelector("#channel-content");
+        if (!content) {
+            content = document.createElement("div");
+            content.id = "channel-content";
+            main.appendChild(content);
+        }
+        content.innerHTML = `<div class="error-block">${escapeHtml(msg)}</div>`;
+    }
     function renderTextChannel(container, data) {
         const html = `
         <div class="chat-messages">
@@ -324,21 +292,22 @@
     }
 
     function renderGroupChannel(container, data) {
-        if (!data.groups || data.groups.length === 0) {
+        const groups = data.groups || []; // garante que sempre é um array
+        if (groups.length === 0) {
             container.innerHTML = `
-                <div class="empty-block">
-                    <button onclick="openCreateGroupModal()">+ Criar Grupo</button>
-                </div>
-            `;
+            <div class="empty-block">
+                <button onclick="openCreateGroupModal()">+ Criar Grupo</button>
+            </div>
+        `;
             return;
         }
-
-        container.innerHTML = data.groups.map(g => `
-            <div class="group-card">
-                <h3>${g.name}</h3>
-            </div>
-        `).join('');
+        container.innerHTML = groups.map(g => `
+        <div class="group-card">
+            <h3>${g.name}</h3>
+        </div>
+    `).join('');
     }
+
 
     function openCreateGroupModal() {
         alert("Abrir modal para criar grupo — depois implementamos");

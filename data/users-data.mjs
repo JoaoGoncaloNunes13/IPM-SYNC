@@ -201,24 +201,27 @@ export async function getServer(idServer) {
 
 //criação de canais
 
-export async function createChannel(serverId, type, name) {  //alterar para depois cada tipo de canal que temos
+export async function createChannel(serverId, type, name) {
     const server = await getServer(serverId);
-    let channel = null;
     if (!server) throw new Error("Servidor não encontrado.");
     if (!server.channels[type]) throw new Error("Tipo de canal inválido.");
-    if (type == 'texto') {
-        channel = {id: randomUUID(), name, messages: []};
-    } else if(type == 'grupos') {
-        channel = {id: randomUUID(), name, grupos: []};
-    } else if (type == 'tarefas') {
-        channel = {id: randomUUID(), name, tarefas: []};
-    } else if (type == 'calendario') {
-        channel = {id: randomUUID(), name, eventos: []};
-    }
 
+    const nextId = server.channels[type].length;
+    let channel = null;
+    if (type === 'texto') {
+        channel = { id: nextId, name, messages: [] };
+    } else if (type === 'grupos') {
+        channel = { id: nextId, name, groups: [] };
+    } else if (type === 'tarefas') {
+        channel = { id: nextId, name, tarefas: [] };
+    } else if (type === 'calendario') {
+        channel = { id: nextId, name, eventos: [] };
+    }
     server.channels[type].push(channel);
+    console.log(`Servidor ${serverId} tem agora canais do tipo ${type}:`, server.channels[type]);
     return channel;
 }
+
 
 export async function getChannel(serverId, type, channelId) {
     const server = await getServer(serverId);
