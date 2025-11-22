@@ -581,15 +581,38 @@ button:hover {
     object-fit: cover;
     z-index: 10;
     border: 3px dashed #1a73e8;
+}
 
+/* ANIMAÇÃO LOGO */
+.animated-logo {
+    opacity: 0;
+    animation:
+        appear 0.5s ease-out forwards,
+        slideLeft 1.5s ease-out forwards 0.8s; /* starts after appear finishes */
+}
+
+@keyframes appear {
+    0% { 
+        transform: translateX(120%);
+        opacity: 0; 
+    }
+    100% {
+        transform: translateX(120%);
+        opacity: 1; 
+    }
+}
+
+@keyframes slideLeft {
+    0% { transform: translateX(120%); }
+    100% { transform: translateX(0); }
 }
 
 /* ANIMAÇÃO SLOGAN */
-.animated-slogan {
+.animated-slogan-move {
     opacity: 0; 
     transform: translateX(-80px);
-    animation: slideOut 0.6s ease-out forwards;
-    animation-delay: 0.3s;
+    animation: slideOut 1s ease-out forwards;
+    animation-delay: 1.2s;
 }
 
 @keyframes slideOut {
