@@ -8,9 +8,11 @@
             <input type="text" id="serverName" required />
 
             <label>Canais iniciais:</label>
-            <input type="checkbox" id="grupos" checked /> Grupos
-            <input type="checkbox" id="tarefas" checked /> Tarefas
-            <input type="checkbox" id="calendario" checked /> Calendário
+            <div class="checkbox-group">
+                <label><input type="checkbox" id="grupos" checked> Grupos</label>
+                <label><input type="checkbox" id="tarefas" checked> Tarefas</label>
+                <label><input type="checkbox" id="calendario" checked> Calendário</label>
+            </div>
 
             <button type="submit">Criar Servidor</button>
         </form>
