@@ -6,7 +6,11 @@
         <input id="groups-name" type="text">
 
         <label>Quantidade:</label>
-        <input id="groups-qty"></input>
+        <div class="qty-wrapper">
+            <button type="button" class="qty-btn" onclick="changeQty(-1)">−</button>
+            <input id="groups-qty" type="number" min="1" value="1">
+            <button type="button" class="qty-btn" onclick="changeQty(1)">+</button>
+        </div>
 
         <div class="modal-buttons">
             <button onclick="closeGroupsModal()">Cancelar</button>
