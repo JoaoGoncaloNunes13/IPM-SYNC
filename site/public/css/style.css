@@ -570,7 +570,7 @@ button:hover {
     background-color: #dbe4ee;
     border-radius: 15px;
     margin: 40px auto 0;   /* centra automaticamente */
-    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    border: 1px solid #000000;
 }
 
 /* LOGO SYNC */
