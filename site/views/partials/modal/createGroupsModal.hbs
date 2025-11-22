@@ -1,0 +1,50 @@
+<div id="create-groups-modal" class="modal hidden">
+    <div class="modal-content">
+        <h2>Criar Grupo(s)</h2>
+
+        <label>Nome:</label>
+        <input id="groups-name" type="text">
+
+        <label>Quantidade:</label>
+        <input id="groups-qty"></input>
+
+        <div class="modal-buttons">
+            <button onclick="closeGroupsModal()">Cancelar</button>
+            <button onclick="submitNewGroups()">Criar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openCreateGroupsModal() {
+        document.getElementById("create-groups-modal").classList.remove("hidden");
+    }
+
+    function closeGroupsModal() {
+        document.getElementById("create-groups-modal").classList.add("hidden");
+    }
+
+    async function submitNewGroups() {
+        const name = document.getElementById("groups-name").value.trim();
+        const qty = document.getElementById("groups-qty").value.trim();
+        const currentChannel = window.currentGroupsChannel
+
+        if (!name || !qty) {
+            alert("Nome e quantidade são obrigatórios");
+            return;
+        }
+
+        const res = await fetch(`/servers/${window.SERVER_ID}/grupos/${currentChannel}`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ name, quantity: qty})
+        });
+
+        if (!res.ok) return alert("Erro ao criar grupos");
+
+        const groups = await res.json();
+        renderChannel('grupos', groups);
+        closeGroupsModal();
+    }
+
+</script>

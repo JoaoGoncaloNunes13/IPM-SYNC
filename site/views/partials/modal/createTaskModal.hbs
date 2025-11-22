@@ -52,6 +52,8 @@
             return;
         }
 
+        console.log({ title, desc, deadline, assignedTo });
+
         const res = await fetch(`/servers/${window.SERVER_ID}/tarefas/${currentChannel}`, {
             method: "POST",
             headers: {"Content-Type": "application/json"},

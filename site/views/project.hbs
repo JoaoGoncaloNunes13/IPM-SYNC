@@ -233,7 +233,7 @@
         } else if (type === "tarefas") {
             renderTaskChannel(content, data);
         } else if (type === "grupos") {
-            renderGroupChannel(content, data);
+            renderGroupsChannel(content, data);
         } else if (type === "calendario") {
             renderCalendarChannel(content, data);
         } else {
@@ -355,26 +355,86 @@
     }
 
 
-    function renderGroupChannel(container, data) {
-        const groups = data.groups || []; // garante que sempre é um array
-        if (groups.length === 0) {
-            container.innerHTML = `
-            <div class="empty-block">
-                <button onclick="openCreateGroupModal()">+ Criar Grupo</button>
-            </div>
-        `;
-            return;
+    function renderGroupsChannel(container, data) {
+        container.innerHTML = "";
+        const groups = data.groups || [];
+
+        // Botão de criar novos grupos
+        const createBtn = document.createElement("div");
+        createBtn.className = "empty-block";
+        createBtn.innerHTML = `
+        <button style="
+            padding: 8px 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        " onclick="openCreateGroupsModal()">+ Criar Grupo(s)</button>`;
+        container.appendChild(createBtn);
+
+        if (groups.length > 0) {
+            const groupsList = document.createElement("div");
+            groupsList.className = "groups-list";
+            groupsList.style.display = "grid";
+            groupsList.style.gridTemplateColumns = "repeat(auto-fit, minmax(250px, 1fr))";
+            groupsList.style.gap = "12px";
+            groupsList.style.marginTop = "16px";
+
+            groupsList.forEach(t => {
+                const groupCard = document.createElement("div");
+                groupCard.className = "group-card";
+                groupCard.style.padding = "12px";
+                groupCard.style.borderRadius = "10px";
+                groupCard.style.boxShadow = "0 2px 6px rgba(0,0,0,0.15)";
+                groupCard.style.backgroundColor = t.color || "#fefefe";
+                groupCard.style.transition = "transform 0.2s, box-shadow 0.2s";
+                groupCard.onmouseover = () => {
+                    groupCard.style.transform = "translateY(-2px)";
+                    groupCard.style.boxShadow = "0 4px 12px rgba(0,0,0,0.25)";
+                };
+                groupCard.onmouseout = () => {
+                    groupCard.style.transform = "translateY(0)";
+                    groupCard.style.boxShadow = "0 2px 6px rgba(0,0,0,0.15)";
+                };
+
+                groupCard.innerHTML = `
+                <h3 style="margin:0 0 6px 0; font-size: 18px; color: #333;">${t.title}</h3>
+                <p style="margin: 4px 0;"><strong>Nome:</strong> ${t.name || "–"}</p>
+                <p style="margin: 4px 0;"><strong>Participantes:</strong></p>
+            `;
+
+                groupsList.appendChild(groupCard);
+            });
+
+            container.appendChild(groupsList);
+        } else {
+            const emptyBlock = document.createElement("div");
+            emptyBlock.className = "empty-block";
+            emptyBlock.style.marginTop = "16px";
+            emptyBlock.style.textAlign = "center";
+            emptyBlock.style.color = "#777";
+            emptyBlock.innerHTML = `<p>Nenhum grupo criado ainda.</p>`;
+            container.appendChild(emptyBlock);
         }
-        container.innerHTML = groups.map(g => `
-        <div class="group-card">
-            <h3>${g.name}</h3>
-        </div>
-    `).join('');
     }
 
 
-    function openCreateGroupModal() {
-        alert("Abrir modal para criar grupo — depois implementamos");
+    function openCreateGroupsModal() {
+        const modal = document.getElementById("create-groups-modal");
+        if (!modal) return;
+
+        modal.classList.remove("hidden");
+        modal.style.display = "block";
+    }
+
+    function closeGroupsModal() {
+        const modal = document.getElementById("create-groups-modal");
+        if (!modal) return;
+
+        modal.classList.add("hidden");
+        modal.style.display = "none";
     }
 
     function renderCalendarChannel(container, data) {
