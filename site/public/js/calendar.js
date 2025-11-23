@@ -75,42 +75,41 @@ document.addEventListener('DOMContentLoaded', function () {
         e.preventDefault();
         const formData = new FormData(form);
 
-        let date = formData.get('date');
-        let endDate = formData.get('endDate');
+        let date = formData.get('date');        // YYYY-MM-DD
+        let endDate = formData.get('endDate');  // YYYY-MM-DD or ""
+        const time = formData.get('time');      // HH:MM or ""
+        const diaAtual = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+        if (date < diaAtual) {
+            alert("A data não pode ser anterior ao dia de hoje!");
+            return;
+        }
+
+
         if (endDate && endDate < date) {
             alert("A data final não pode ser menor que a data inicial!");
             return;
         }
-        const time = formData.get('time');
-        if (time){
-            date += 'T' + time;
-            if (endDate){
-                endDate += 'T' + time;
-            }
-        }
-        const data = {
+
+        const payload = {
             title: formData.get('title'),
-            date: date,
-            endDate: endDate,
+            date: date,                       // envia SEM 'T'
+            endDate: endDate || null,         // null se vazio
             duration: formData.get('duration'),
             color: formData.get('color'),
-            time: time
-
+            time: time || null                // envia time separado
         };
 
         const res = await fetch('/createStudySession', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
         });
 
         if (res.ok) {
-            const result = await res.json();
+            await res.json(); // opcional: podes inspecionar a resposta
             alert("Sessão criada!");
-            calendar.refetchEvents();
-            calendar.render();
+            calendar.refetchEvents(); // suficiente para atualizar
+            form.reset();
         } else {
             alert("Erro ao criar sessão");
         }

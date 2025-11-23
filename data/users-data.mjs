@@ -258,22 +258,36 @@ export async function getMessages(serverId, channelType, channelId) {
 
 // lembretes e sessoes de estudo
 
-export async function createStudySessions(userId, title, date, endDate, duration,color,time) {
+export async function createStudySessions(userId, title, date, endDate, duration, color, time) {
     const user = await getUser(userId);
     if (!user) throw new Error("Utilizador não encontrado.");
 
     const sessions = [];
     console.log("USERDATA COLOR = ", color);
 
-    // Constrói ISO completa da primeira sessão
-    const firstSessionDate = time ? `${date}T${time}` : date;
+    // Se date vier com 'T', separa
+    if (date && date.includes('T')) {
+        const parts = date.split('T').filter(Boolean);
+        date = parts[0]; // YYYY-MM-DD
+        if (!time && parts.length >= 2) time = parts[parts.length - 1];
+    }
+
+    // Normaliza time (HH:MM -> HH:MM:00 se precisares de segundos)
+    let normalizedTime = null;
+    if (time) {
+        normalizedTime = time.split(':').length === 2 ? `${time}:00` : time;
+    }
+
+    // Função para criar id único (melhor que user.calendar.length)
+    const makeId = () => `${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
 
     if (!endDate) {
         // Apenas uma sessão
         const session = {
-            id: user.calendar.length,
+            id: makeId(),
             title,
-            date: firstSessionDate,
+            date: date,                   // guarda só o YYYY-MM-DD
+            time: normalizedTime ? normalizedTime.slice(0,5) : null, // guarda HH:MM (opcional)
             duration,
             color: color,
             type: "sessão"
@@ -282,19 +296,16 @@ export async function createStudySessions(userId, title, date, endDate, duration
         sessions.push(session);
     } else {
         // Criar várias sessões entre date e endDate
-        let currentDate = new Date(date);
-        const finalDate = new Date(endDate);
+        let currentDate = new Date(date + 'T00:00:00');
+        const finalDate = new Date(endDate + 'T00:00:00');
 
         while (currentDate <= finalDate) {
-            // Reconstrói ISO string incluindo hora se houver
-            const sessionDate = time
-                ? `${currentDate.toISOString().split('T')[0]}T${time}`
-                : currentDate.toISOString().split('T')[0];
-
+            const yyyy_mm_dd = currentDate.toISOString().split('T')[0];
             const session = {
-                id: user.calendar.length,
+                id: makeId(),
                 title,
-                date: sessionDate,
+                date: yyyy_mm_dd,
+                time: normalizedTime ? normalizedTime.slice(0,5) : null,
                 duration,
                 color: color,
                 type: "sessão"
@@ -302,7 +313,6 @@ export async function createStudySessions(userId, title, date, endDate, duration
             user.calendar.push(session);
             sessions.push(session);
 
-            // Avança um dia
             currentDate.setDate(currentDate.getDate() + 1);
         }
     }
