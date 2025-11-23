@@ -357,21 +357,17 @@ export async function addUserToServer(userId, serverId, role) {
 
 // Funçoes para gerir servidores
 
-export async function createServer(name, ownerId, channels) {
+export async function createServer(name, ownerId) {
     const newServer = {
         id: servers.length,
         name,
         ownerId,
         codigo: Math.random().toString(36).substring(2, 8).toUpperCase(),
         channels: {
-            texto: [{
-                id: randomUUID(),
-                name: "Geral",
-                messages: []
-            }],
-            grupos: channels.grupos ? [channels.grupos] : [],
-            tarefas: channels.tarefas ? [channels.tarefas] : [],
-            calendario: channels.calendario ? [channels.calendario] : [],
+            texto: [],
+            grupos: [],
+            tarefas: [],
+            calendario: [],
         },
         members: [{
             id: ownerId,
@@ -665,6 +661,46 @@ export async function addTaskToChannelInGroup(serverId, channelId, groupId, chan
     console.log(`Canal de tarefas ${channelIdInGroup} do grupo ${groupId} agora tem tarefas:`, groupChannel.tarefas);
     return task;
     
+}
+
+export async function addMessageToTextChannel(serverId, channelId, message) {
+    const server = servers.find(s => s.id === serverId);
+    if (!server) throw new Error("Servidor não encontrado.");
+    const channel = server.channels.texto.find(c => c.id === channelId);
+    if (!channel) throw new Error("Canal de texto não encontrado.");
+    let newMessage = {
+        id: channel.messages.length,
+        authorId: message.authorId,
+        author: message.author,
+        content: message.content,
+        timestamp: new Date()
+    };
+
+    channel.messages.push(newMessage);
+    console.log(`Canal de texto ${channelId} agora tem mensagens:`, channel.messages);
+    return newMessage;
+}
+
+export async function addMessageToTextChannelInGroup(serverId, channelId , groupId, channelIdInGroup, message) {
+    const server = servers.find(s => s.id === serverId);
+    if (!server) throw new Error("Servidor não encontrado.");
+    const channel = server.channels.grupos.find(c => c.id === channelId);
+    if (!channel) throw new Error("Canal de grupos não encontrado.");
+    const group = channel.groups.find(g => g.id === groupId);
+    if (!group) throw new Error("Grupo não encontrado.");
+    const groupChannel = group.channels.texto.find(c => c.id === channelIdInGroup);
+    if (!groupChannel) throw new Error("Canal de texto do grupo não encontrado.");
+    let newMessage = {
+        id: groupChannel.messages.length,
+        authorId: message.authorId,
+        author: message.author,
+        content: message.content,
+        timestamp: new Date()
+    };
+
+    groupChannel.messages.push(newMessage);
+    console.log(`Canal de texto ${channelIdInGroup} do grupo ${groupId} agora tem mensagens:`, groupChannel.messages);
+    return newMessage;
 }
 
 

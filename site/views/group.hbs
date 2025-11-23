@@ -170,6 +170,10 @@
             const currentEl = ensureChatHeader();
             if (currentEl) currentEl.innerText = "#" + (channelName);
 
+            if(type === "texto") {
+                window.currentTextChannel = channelId;
+                window.currentTextName = channelName;
+            }
             if (type === "tarefas") {
                 window.currentTaskChannel = channelId;
             }
@@ -350,18 +354,28 @@
         `;*/
     }
 
-    /*function sendMessage(e) {
+    function sendMessage(e) {
         if (e.key !== "Enter") return;
 
         const input = document.getElementById("chat-input");
         const text = input.value.trim();
         if (!text) return;
 
-        const msgObj = { author: "Tu", text };
-        channelMessages[currentChannel].push(msgObj);
-        loadMessages();
+
+        // Envia a mensagem para o backend
+        fetch(`/servers/${window.SERVER_ID}/texto/${window.SERVER_CHANNEL_ID}/${window.GROUP_ID}/texto/${window.currentTextChannel}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ content: text })
+        }).then(res => {
+            if (!res.ok) {
+                alert("Erro ao enviar mensagem.");
+                return;
+            }
+        });
+        openChannel("texto", window.currentTextChannel, window.currentTextName);
         input.value = "";
-    }*/
+    }
 
     function addChannelToSidebar(type, channel) {
         const list = document.querySelector(`ul.channel-list:nth-of-type(${getListIndex(type)})`);

@@ -33,18 +33,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const name = document.getElementById("serverName").value;
 
-        const grupos = document.getElementById("grupos").checked;
+        /*const grupos = document.getElementById("grupos").checked;
         const tarefas = document.getElementById("tarefas").checked;
-        const calendario = document.getElementById("calendario").checked;
+        const calendario = document.getElementById("calendario").checked;*/
 
         const response = await fetch("/createServer", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({ 
-                name,
-                grupos,
-                tarefas,
-                calendario
+                name
             })
         });
 

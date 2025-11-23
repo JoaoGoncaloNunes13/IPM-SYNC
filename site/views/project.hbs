@@ -153,6 +153,11 @@
             return;
         }
 
+        if(type === "calendario") {
+            alert("Criação de canais de calendário ainda não é suportada.");
+            return;
+        }
+
         // POST para o backend
         const res = await fetch(`/servers/${window.SERVER_ID}/channels`, {
             method: "POST",
@@ -187,6 +192,11 @@
             const currentEl = ensureChatHeader();
             if (currentEl) currentEl.innerText = "#" + (channelName);
 
+
+            if(type === "texto") {
+                window.currentTextChannel = channelId;
+                window.currentTextName = channelName;
+            }
             if (type === "tarefas") {
                 window.currentTaskChannel = channelId;
             }
@@ -491,11 +501,22 @@
         const text = input.value.trim();
         if (!text) return;
 
-        const msgObj = { author: "Tu", text };
-        channelMessages[currentChannel].push(msgObj);
-        loadMessages();
+        // Envia a mensagem para o backend
+        fetch(`/servers/${window.SERVER_ID}/texto/${window.currentTextChannel}/messages`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ content: text })
+        }).then(res => {
+            if (!res.ok) {
+                alert("Erro ao enviar mensagem.");
+                return;
+            }
+        });
+
+        openChannel("texto", window.currentTextChannel, window.currentTextName);
         input.value = "";
     }
+
     function addChannelToSidebar(type, channel) {
         const list = document.querySelector(`ul.channel-list:nth-of-type(${getListIndex(type)})`);
         console.log("Adicionando canal à sidebar:", type, channel, list);

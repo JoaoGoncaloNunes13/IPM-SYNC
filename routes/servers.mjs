@@ -35,13 +35,8 @@ router.post("/createServer", async (req, res) => {
         const ownerId = req.session.userId;
         const { name, grupos, tarefas, calendario } = req.body;
 
-        const channels = {
-            grupos: grupos ? [] : [],
-            tarefas: tarefas ? [] : [],
-            calendario: calendario ? [] : []
-        };
 
-        const newServer = await data.createServer(name, ownerId, channels);
+        const newServer = await data.createServer(name, ownerId);
 
         res.json(newServer);
 

@@ -178,5 +178,61 @@ router.post('/servers/:serverId/grupos/:channelId/:groupId/tarefas/:channelIdInG
     }
 });
 
+router.post('/servers/:serverId/texto/:channelId/messages', async (req, res) => {
+    const serverId = parseInt(req.params.serverId);
+    const channelId = parseInt(req.params.channelId);
+    const { content } = req.body;
+
+    const user = data.users.find(u => u.id === req.session.userId);
+
+    if (!user) {
+        return res.status(401).json({ error: "Utilizador não autenticado" });
+    }
+    if (!content) {
+        return res.status(400).json({ error: "Conteúdo da mensagem não pode ser vazio" });
+    }
+    try {
+        const message = await data.addMessageToTextChannel(serverId, channelId, {
+            authorId: user.id,
+            author: user.name,
+            content,
+            timestamp: new Date().toISOString()
+        });
+        res.json(message);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+router.post(`/servers/:serverId/texto/:channelId/:groupId/texto/:channelIdInGroup`, async (req, res) => {
+    const serverId = parseInt(req.params.serverId);
+    const channelId = parseInt(req.params.channelId);
+    const groupId = parseInt(req.params.groupId);
+    const channelIdInGroup = parseInt(req.params.channelIdInGroup);
+    const { content } = req.body;
+
+    const user = data.users.find(u => u.id === req.session.userId);
+
+    if (!user) {
+        return res.status(401).json({ error: "Utilizador não autenticado" });
+    }
+    if (!content) {
+        return res.status(400).json({ error: "Conteúdo da mensagem não pode ser vazio" });
+    }
+
+    try {
+        const message = await data.addMessageToTextChannelInGroup(serverId, channelId, groupId, channelIdInGroup, {
+            authorId: user.id,
+            author: user.name,
+            content,
+            timestamp: new Date().toISOString()
+        });
+        res.json(message);
+    } catch (err) {
+        res.status(404).send(err.message);
+    }
+
+});
 
 export default router;
