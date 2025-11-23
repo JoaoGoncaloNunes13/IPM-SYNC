@@ -26,14 +26,15 @@ export function initializeData() {
         {id: randomUUID(), name: "Pedro Peres", email: "pedro@sync.com", password: "1234", calendar: []},
         {id: randomUUID(), name: "Ricardo Oliveira", email: "ricardo@sync.com", password: "1234",calendar: []},
         {id: randomUUID(), name: "Professora Teresa", email: "teresa@sync.com", password: "1234",calendar: []},
-        {id: randomUUID(), name: "Fernando Torres", email: "fernando@gmail.com", password: "1234",calendar: []},
+        {id: randomUUID(), name: "Tiago Torres", email: "tiago@gmail.com", password: "1234",calendar: []},
         {id: randomUUID(), name: "Miguel Gamboa", email: "miguel@gmail.com", password: "1234",calendar: []},
         {id: randomUUID(), name: "João Trindade", email: "joao@gmail.com", password: "1234",calendar: []},
         {id: randomUUID(), name: "Pedro Felix", email: "pedro@gmail.com", password: "1234",calendar: []},
         {id: randomUUID(), name: "Paulo Pereira", email: "paulo@gmail.com", password: "1234",calendar: []},
         {id: randomUUID(), name: "Catia Vaz", email: "catia@gmail.com", password: "1234",calendar: []},
         {id: randomUUID(), name: "Matilde Pato", email: "matilde@gmail.com", password: "1234",calendar: []},
-        {id: randomUUID(), name: "Madalena Alves", email: "madalena@gmail.com", password: "1234",calendar: []},
+        {id: randomUUID(), name: "Maria Gomes", email: "maria@gmail.com", password: "1234",calendar: []},
+        {id: randomUUID(), name: "Gustavo Lima", email: "gustavo@gmail.com", password: "1234",calendar: []},
     ];
 
     servers = [
