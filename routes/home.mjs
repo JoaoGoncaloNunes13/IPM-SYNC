@@ -42,20 +42,50 @@ router.post('/createStudySession', async (req, res) => {
 router.get('/getStudySessions', async (req, res) => {
     const user = await getUser(req.session.userId);
     if (!user || !user.calendar) return res.json([]);
+
     try {
         const sessionEvents = await data.getStudySessions(user.id);
         console.log("Sessões obtidas:", sessionEvents);
-        const events = sessionEvents.map(s => ({
-            id: s.id,
-            title: s.title,
-            start: s.time ? `${s.date}T${s.time}` : s.date,
-            allDay: !s.time,
-            color: s.color || '#3788d8',
 
-        }));
-        res.json(events)
+        const normalizeStart = (s) => {
+            if (!s || !s.date) return null;
 
+            // Caso a data esteja mal formada (ex: '2025-11-24T11:11T11:11') - pega na parte da data e na última parte como hora
+            const parts = s.date.split('T').filter(Boolean);
+            let datePart = parts[0]; // YYYY-MM-DD
+            let timePart = null;
 
+            if (parts.length >= 2) {
+                timePart = parts[parts.length - 1];
+            } else if (s.time) {
+                timePart = s.time;
+            }
+
+            if (timePart) {
+                // normaliza HH:MM -> HH:MM:00 (se quiseres manter segundos), aqui mantemos HH:MM
+                const hhmm = timePart.split(':').slice(0,2).join(':');
+                return `${datePart}T${hhmm}`;
+            } else {
+                return datePart; // all-day
+            }
+        };
+
+        const events = sessionEvents.map(s => {
+            const start = normalizeStart(s);
+            const allDay = !start.includes('T');
+            return {
+                id: s.id,
+                title: s.title,
+                start,
+                allDay,
+                color: s.color || '#3788d8',
+                backgroundColor: s.color || '#3788d8', // cor do fundo (preenche o dia)
+                borderColor: s.color || '#3788d8',     // borda da célula
+                display: 'block' // garante que ocupa o dia todo
+            };
+        }).filter(e => e.start);
+
+        res.json(events);
     } catch (err) {
         console.error(err);
         res.status(500).send("Erro ao obter as sessões");
