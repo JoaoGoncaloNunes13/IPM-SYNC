@@ -30,6 +30,10 @@ export function initializeData() {
         {id: randomUUID(), name: "Miguel Gamboa", email: "miguel@gmail.com", password: "1234",calendar: []},
         {id: randomUUID(), name: "João Trindade", email: "joao@gmail.com", password: "1234",calendar: []},
         {id: randomUUID(), name: "Pedro Felix", email: "pedro@gmail.com", password: "1234",calendar: []},
+        {id: randomUUID(), name: "Paulo Pereira", email: "paulo@gmail.com", password: "1234",calendar: []},
+        {id: randomUUID(), name: "Catia Vaz", email: "catia@gmail.com", password: "1234",calendar: []},
+        {id: randomUUID(), name: "Matilde Pato", email: "matilde@gmail.com", password: "1234",calendar: []},
+        {id: randomUUID(), name: "Madalena Alves", email: "madalena@gmail.com", password: "1234",calendar: []},
     ];
 
     servers = [
@@ -118,6 +122,192 @@ export function initializeData() {
                         name: users[8].name,
                         role: "standard"
                     }
+            ],
+        },
+
+        {
+            id: 3,
+            name: "Intereção pessoa-máquina",
+            ownerId: users[9].id,
+            codigo: "JKL012",
+            channels: {
+                texto: [{
+                    id: 0, 
+                    name: "Canal de Texto", 
+                    messages: [{id: 0, authorId: users[9].id, author: users[9].name, content: "Olá a todos!", timestamp: new Date()},]
+                    },
+                    {
+                        id: 1, 
+                        name: "Canal de Duvidas de IPM", 
+                        messages: []
+                    }],
+                grupos: [
+                    {
+                        id: 0,
+                        name: "Canal de Grupos de IPM",
+                        groups: [
+                            {
+                                id: 0,
+                                name: "Projeto IPM_GRP1",
+                                members: [
+                                            {
+                                                id: users[9].id,
+                                                name: users[9].name,
+                                                rule: "owner"
+                                            },
+                                            {
+                                                id: users[6].id,
+                                                name: users[6].name,
+                                                rule: "standard"
+                                            },  
+                                            {
+                                                id: users[7].id,
+                                                name: users[7].name,
+                                                rule: "standard"
+                                            },  
+                                            {
+                                                id: users[8].id,
+                                                name: users[8].name,
+                                                rule: "standard"
+                                            }
+                                        ],
+                        channels: {
+                            texto: [{
+                                    id: 0, 
+                                    name: "Canal de Texto", 
+                                    messages: [{id: 0, authorId: users[9].id, author: users[9].name, content: "Olá a todos!", timestamp: new Date()},]
+                                    },],
+                            tarefas: [
+                                        {
+                                        id: 0,
+                                        name: "tarefas de IPM",
+                                        tarefas: [
+                                            {
+                                                title: 'Pesquisar sobre IPM',
+                                                description: 'Fazer uma pesquisa detalhada sobre o que é IPM e suas aplicações.',
+                                                deadline: '2025-11-15',
+                                                assignedTo: users[6].name,
+                                                completed: true
+                                            },
+                                            {
+                                                title: 'Desenvolver protótipo',
+                                                description: 'Criar um protótipo funcional para o projeto de IPM.',
+                                                deadline: '2025-11-25',
+                                                assignedTo: users[7].name,
+                                                completed: false
+                                            },
+                                        ]
+                                    }
+                            ],
+                            calendario: []
+                        }
+                    },
+                    {
+                        id: 1,
+                        name: "Projeto IPM_GRP2",
+                        members: [
+                            {
+                                id: users[9].id,
+                                name: users[9].name,
+                                rule: "owner"
+                            },
+                            {
+                                id: users[10].id,
+                                name: users[10].name,
+                                rule: "standard"
+                            },
+                            {  
+                                id: users[11].id,
+                                name: users[11].name,
+                                rule: "standard"   
+                            },  
+                            {
+                                id: users[12].id,
+                                name: users[12].name,
+                                rule: "standard"
+                            }
+                        ],
+                        channels: {
+                            texto: [{
+                                    id: 0, 
+                                    name: "Canal de Texto", 
+                                    messages: [{id: 0, authorId: users[9].id, author: users[9].name, content: "Bem vindos ao grupo!" , timestamp: new Date()},]
+                                    },],
+                            tarefas: [
+                                    {
+                                        id: 0,
+                                        name: "tarefas de IPM",
+                                        tarefas: [
+                                            {
+                                                title: 'Entregar relatório IPM',
+                                                description: 'Temos que entregar o relatório do stage 1 até ao final do mês.',
+                                                deadline: '2025-11-20',
+                                                assignedTo: users[10].name,
+                                                completed: true
+                                            },
+                                            {
+                                                title: 'Fazer o backend do projeto',
+                                                description: 'O backend deve estar funcional até ',
+                                                deadline: '2025-11-22',
+                                                assignedTo: users[11].name,
+                                                completed: true
+                                            },
+                                            {
+                                                title: 'Fazer o frontend do projeto',
+                                                description: 'O frontend deve estar funcional até ',
+                                                deadline: '2025-11-28',
+                                                assignedTo: users[12].name,
+                                                completed: false
+                                            }
+                                        ]
+                                    }
+                                ],
+                                
+                            calendario: []
+                        }
+                    }
+                        ],
+                    }
+                ],
+                tarefas: [],
+                calendario: [],
+            },
+            members:[{
+                        id: users[9].id,
+                        name: users[9].name,
+                        role: "owner"
+                    },
+                    {
+                        id: users[6].id,
+                        name: users[6].name,
+                        role: "standard"
+                    },
+                    {
+                        id: users[7].id,
+                        name: users[7].name,
+                        role: "standard"
+                    },
+                    {
+                        id: users[8].id,
+                        name: users[8].name,
+                        role: "standard"
+                    },
+                    {
+                        id: users[10].id,
+                        name: users[10].name,
+                        role: "owner"
+                    },
+                    {
+                        id: users[11].id,
+                        name: users[11].name,
+                        role: "standard"
+                    },
+                    {
+                        id: users[12].id,
+                        name: users[12].name,
+                        role: "owner"
+                    }
+                    
             ],
         }
     ];
@@ -351,6 +541,7 @@ export async function addTaskToChannel(serverId, channelId, task) {
     const server = await getServer(serverId);
     const channel = server.channels.tarefas.find(c => c.id === channelId);
     channel.tarefas.push(task);
+    console.log(`Canal de tarefas ${channelId} agora tem tarefas:`, channel.tarefas);
 
     // Atualiza calendário se existir
     const calendarChannel = server.channels.calendario[0]; // assume 1 canal
@@ -404,8 +595,66 @@ export async function addGroupsToChannel(serverId, channelId, groups) {
 
     // adiciona os grupos ao canal
     channel.groups.push(...groupsToBeAdded);
+    console.log(`Canal ${channelId} agora tem grupos:`, channel.groups);
 
     return channel;
+}
+
+export async function createChannelInGroup(serverId, channelId, groupId, type, name) {
+    const server = await getServer(serverId);
+    const channel = server.channels.grupos.find(c => c.id === channelId);
+    if (!channel) throw new Error("Canal de grupos não encontrado.");
+    const group = channel.groups.find(g => g.id === groupId);
+    if (!group) throw new Error("Grupo não encontrado.");
+    const nextId = group.channels[type].length;
+    let newChannel = null;
+    if (type === 'texto') {
+        newChannel = { id: nextId, name, messages: [] };
+    } else if (type === 'tarefas') {
+        newChannel = { id: nextId, name, tarefas: [] };
+    } else if (type === 'calendario') {
+        newChannel = { id: nextId, name, eventos: [] };
+    }
+    group.channels[type].push(newChannel);
+    console.log(`Grupo ${groupId} agora tem canais do tipo ${type}:`, group.channels[type]);
+    return newChannel;
+}
+
+export async function getGroupChannel(serverId, channelId, groupId, type, channelIdInGroup) {
+    const server = await getServer(serverId);
+    const channel = server.channels.grupos.find(c => c.id === channelId);
+    if (!channel) throw new Error("Canal de grupos não encontrado.");
+    const group = channel.groups.find(g => g.id === groupId);
+    if (!group) throw new Error("Grupo não encontrado.");
+    const groupChannel = group.channels[type].find(c => c.id === channelIdInGroup);
+    if (!groupChannel) throw new Error("Canal do grupo não encontrado.");
+    return groupChannel;
+}
+
+export async function addTaskToChannelInGroup(serverId, channelId, groupId, channelIdInGroup, task) {
+    const server = await getServer(serverId);
+    const channel = server.channels.grupos.find(c => c.id === channelId);
+    if (!channel) throw new Error("Canal de grupos não encontrado.");
+    const group = channel.groups.find(g => g.id === groupId);
+    if (!group) throw new Error("Grupo não encontrado.");
+    const groupChannel = group.channels.tarefas.find(c => c.id === channelIdInGroup);
+    if (!groupChannel) throw new Error("Canal de tarefas do grupo não encontrado.");
+    groupChannel.tarefas.push(task);
+
+    // Atualiza calendário do grupo se existir
+    const calendarChannel = group.channels.calendario[0]; // assume 1 canal de calendário
+    if (calendarChannel) {
+        calendarChannel.events = calendarChannel.events || [];
+        calendarChannel.events.push({
+            id: calendarChannel.events.length,
+            title: task.title,
+            date: task.deadline,
+            type: 'task'
+        });
+    }
+    console.log(`Canal de tarefas ${channelIdInGroup} do grupo ${groupId} agora tem tarefas:`, groupChannel.tarefas);
+    return task;
+    
 }
 
 

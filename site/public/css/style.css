@@ -36,6 +36,18 @@ button:hover {
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
+.task-card {
+    position: relative;
+}
+
+.task-status-icon {
+    position: absolute;
+    bottom: 8px;
+    right: 10px;
+    font-size: 22px;
+}
+
+
 /* ================== NAVBAR ================== */
 .navbar {
     display: flex;

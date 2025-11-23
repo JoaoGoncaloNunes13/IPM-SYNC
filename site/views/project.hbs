@@ -93,6 +93,7 @@
 
 <script>
     window.SERVER_ID = "{{project.id}}";
+    window.MEMBER = "{{project.members}}";
 
     async function addMember() {
         alert("Ainda não é possível adicionar membros.");
@@ -165,12 +166,13 @@
         }
 
         const channel = await res.json();
+        console.log("Canal criado:", channel);
 
         // Adicionar canal à sidebar
         addChannelToSidebar(type, channel);
 
         // Abrir canal automaticamente
-        openChannel(type, channel.id);
+        openChannel(type, channel.id, channel.name);
 
         closeChannelModal();
     }
@@ -179,10 +181,11 @@
     async function openChannel(type, channelId, channelName) {
         try {
             console.log("Canal atual:", type, channelId, channelName);
+            console.log("membros:", window.MEMBER);
 
             // garante header seguro
             const currentEl = ensureChatHeader();
-            if (currentEl) currentEl.innerText = "#" + (channelName || channelId);
+            if (currentEl) currentEl.innerText = "#" + (channelName);
 
             if (type === "tarefas") {
                 window.currentTaskChannel = channelId;
@@ -319,12 +322,25 @@
                     taskCard.style.boxShadow = "0 2px 6px rgba(0,0,0,0.15)";
                 };
 
+                let statusIcon = "";
+                const deadlineDate = new Date(t.deadline);
+                const now = new Date();
+
+                if (t.completed === true) {
+                    statusIcon = "✔️";
+                } else if (deadlineDate < now) {
+                    statusIcon = "❌";
+                } else {
+                    statusIcon = "⏳";
+                }
+
                 taskCard.innerHTML = `
                 <h3 style="margin:0 0 6px 0; font-size: 18px; color: #333;">${t.title}</h3>
                 <p style="margin: 4px 0;"><strong>Descrição:</strong> ${t.description || "–"}</p>
                 <p style="margin: 4px 0;"><strong>Prazo:</strong> ${t.deadline}</p>
                 <p style="margin: 4px 0;"><strong>Responsável:</strong> ${t.assignedTo}</p>
                 <p style="margin: 4px 0;"><strong>Tipo:</strong> ${t.type || "tarefa"}</p>
+                <div class="task-status-icon">${statusIcon}</div>
             `;
 
                 taskList.appendChild(taskCard);
@@ -386,6 +402,7 @@
             groupsList.style.marginTop = "16px";
 
             groups.forEach(t => {
+                console.log(t);
                 const groupCard = document.createElement("div");
                 groupCard.className = "group-card";
                 groupCard.style.padding = "12px";
@@ -405,8 +422,14 @@
                 groupCard.onclick = () => openGroup(t.id);
                 groupCard.innerHTML = `
                 <p style="margin: 4px 0;"><strong>Nome:</strong> ${t.name || "–"}</p>
-                <p style="margin: 4px 0;"><strong>Participantes:</strong></p>
-            `;
+                <p style="margin: 4px 0;">
+                <strong>Participantes:</strong> 
+                ${t.members
+                    .filter(member => member.rule !== "owner")  // filtra os owners
+                    .map(member => member.name)                 // pega apenas os nomes
+                    .join(", ") || "–"}                         
+                </p>
+                `;
 
                 groupsList.appendChild(groupCard);
             });
@@ -454,10 +477,11 @@
     }
 
     function renderCalendarChannel(container, data) {
-        container.innerHTML = `
+        alert("Funcionalidade de calendário ainda não implementada.");
+        /*container.innerHTML = `
             <h2>Calendário do Projeto</h2>
             <p>(Aqui vais colocar o calendário futuro)</p>
-        `;
+        `;*/
     }
 
     function sendMessage(e) {
@@ -474,6 +498,7 @@
     }
     function addChannelToSidebar(type, channel) {
         const list = document.querySelector(`ul.channel-list:nth-of-type(${getListIndex(type)})`);
+        console.log("Adicionando canal à sidebar:", type, channel, list);
         if (!list) return;
 
         const li = document.createElement("li");

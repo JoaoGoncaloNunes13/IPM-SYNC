@@ -1,26 +1,388 @@
-<div class="group-page">
+<div class="project-page">
 
-    <aside class="group-sidebar">
+    <aside class="project-sidebar">
         <h2>{{group.name}}</h2>
 
-        <h3>Canais</h3>
-        <ul>
+        <h3 class="sidebar-title">Canais de Texto</h3>
+        <ul class="channel-list">
             {{#each group.channels.texto}}
-                <li onclick="openGroupChannel('texto', '{{this.id}}')">#{{this.name}}</li>
+                <li class="channel-item">
+                    <span onclick="openChannel('texto', '{{this.id}}', '{{this.name}}')">#{{this.name}}</span>
+                    <button class="delete-channel" onclick="deleteChannel('{{this.id}}')">×</button>
+                </li>
             {{/each}}
         </ul>
 
-        <h3>Membros</h3>
-        <ul>
-            {{#each group.members}}
-                <li>{{this.name}}</li>
+       <h3 class="sidebar-title">Canais de Tarefas</h3>
+        <ul class="channel-list">
+            {{#each group.channels.tarefas}}
+                <li class="channel-item">
+                    <span onclick="openChannel('tarefas', '{{this.id}}', '{{this.name}}')">#{{this.name}}</span>
+                    <button class="delete-channel" onclick="deleteChannel('{{this.id}}')">×</button>
+                </li>
             {{/each}}
         </ul>
+
+        <h3 class="sidebar-title">Calendário</h3>
+        <ul class="channel-list">
+            {{#each group.channels.calendario}}
+                <li class="channel-item">
+                    <span onclick="openChannel('calendario', '{{this.id}}', '{{this.name}}')">#{{this.name}}</span>
+                    <button class="delete-channel" onclick="deleteChannel('{{this.id}}')">×</button>
+                </li>
+            {{/each}}
+        </ul>
+
+        <button class="new-channel-btn" onclick="createChannel()">+ Novo Canal</button>
+
+        <!-- Membros -->
+        <h3 class="sidebar-title">Membros</h3>
+        <ul id="member-list" class="member-list">
+            {{#each group.members}}
+                <li class="member-item">
+                    <span>{{this.name}}</span>
+                    <!-- podemos depois adicionar funcionalidades de remoção de membros -->
+                    <!--<button class="remove-member" onclick="removeMember('{{this.id}}')">×</button> --> 
+                </li>
+            {{/each}}
+        </ul>
+
     </aside>
 
-    <main class="group-main">
-        <h3 id="group-current-channel">Seleciona um canal</h3>
-        <div id="group-channel-content"></div>
+    <main class="project-main">
+        <div class="chat-header">
+            <h3 id="current-channel">Bem vindo</h3>
+        </div>
     </main>
-
 </div>
+
+<div id="create-channel-modal" class="modal hidden">
+    <div class="modal-content">
+        <h2>Criar novo canal</h2>
+
+        <label>Tipo de canal:</label>
+        <select id="channel-type">
+            <option value="texto">Texto</option>
+            <option value="tarefas">Tarefas</option>
+            <option value="calendario">Calendário</option>
+        </select>
+
+        <label>Nome do canal:</label>
+        <input id="channel-name" type="text" placeholder="Nome do canal">
+
+        <div class="modal-buttons">
+            <button onclick="closeChannelModal()">Cancelar</button>
+            <button onclick="submitNewChannel()">Criar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.SERVER_ID = "{{server.id}}";
+    window.GROUP_ID = "{{group.id}}";
+    window.SERVER_CHANNEL_ID = "{{serverChannel.id}}";
+    window.MEMBROS = "{{group.members}}";
+    
+
+    function removeMember(name) {
+        alert("Ainda não é possível remover membros.");
+
+    }
+
+    /* --- Garante que existe o header e o h3#current-channel --- */
+    function ensureChatHeader() {
+        let main = document.querySelector(".project-main");
+        if (!main) return null;
+
+        let header = main.querySelector(".chat-header");
+        if (!header) {
+            header = document.createElement("div");
+            header.className = "chat-header";
+            header.innerHTML = `<h3 id="current-channel">Bem vindo</h3>`;
+            main.insertBefore(header, main.firstChild);
+        } else {
+            let h = header.querySelector("#current-channel");
+            if (!h) {
+                h = document.createElement("h3");
+                h.id = "current-channel";
+                h.textContent = "Bem vindo";
+                header.appendChild(h);
+            }
+        }
+        return main.querySelector("#current-channel");
+    }
+
+    function createChannel() {
+        const modal = document.getElementById("create-channel-modal");
+        if (modal) {
+            modal.classList.remove("hidden");
+            modal.style.display = "block";
+        }
+    }
+
+    function closeChannelModal() {
+        const modal = document.getElementById("create-channel-modal");
+        modal.classList.add("hidden");
+        modal.style.display = "none";
+        //window.location.reload();
+    }
+
+    async function submitNewChannel() {
+        const type = document.getElementById("channel-type").value;
+        const name = document.getElementById("channel-name").value.trim();
+
+        if (!name) {
+            alert("O nome do canal é obrigatório");
+            return;
+        }
+
+        // POST para o backend
+        const res = await fetch(`/servers/${window.SERVER_ID}/grupos/${window.SERVER_CHANNEL_ID}/${window.GROUP_ID}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ type, name })
+        });
+
+        if (!res.ok) {
+            alert("Erro ao criar canal.");
+            return;
+        }
+
+        const channel = await res.json();
+        console.log("Canal criado:", channel);
+
+        // Adicionar canal à sidebar
+        addChannelToSidebar(type, channel);
+        //window.location.reload();
+        // Abrir canal automaticamente
+        openChannel(type, channel.id, channel.name);
+
+        closeChannelModal();
+    }
+
+    /* --- openChannel (segura) --- */
+    async function openChannel(type, channelId, channelName) {
+        try {
+            console.log("Canal atual:", type, channelId, channelName);
+            
+
+            // garante header seguro
+            const currentEl = ensureChatHeader();
+            if (currentEl) currentEl.innerText = "#" + (channelName);
+
+            if (type === "tarefas") {
+                window.currentTaskChannel = channelId;
+            }
+
+            console.log("Abrindo canal:", type, channelId);
+
+            const res = await fetch(`/servers/${window.SERVER_ID}/grupos/${window.SERVER_CHANNEL_ID}/${window.GROUP_ID}/${type}/${channelId}`);
+            if (!res.ok) {
+                console.error("Erro ao carregar canal:", await res.text());
+                renderError("Erro ao carregar canal.");
+                return;
+            }
+
+            const channelData = await res.json();
+            console.log("Dados do canal:", channelData);
+            //window.location.reload();
+            renderChannel(type, channelData);
+        } catch (err) {
+            console.error(err);
+            renderError("Erro ao abrir o canal.");
+        }
+    }
+
+    function renderChannel(type, data) {
+        ensureChatHeader();
+        const main = document.querySelector(".project-main");
+        if (!main) return;
+
+        let content = main.querySelector("#channel-content");
+        if (!content) {
+            content = document.createElement("div");
+            content.id = "channel-content";
+            const header = main.querySelector(".chat-header");
+            if (header && header.nextSibling) main.insertBefore(content, header.nextSibling);
+            else main.appendChild(content);
+        }
+        content.innerHTML = "";
+
+        if(type === "texto") renderTextChannel(content, data);
+        else if(type === "tarefas") renderTaskChannel(content, data);
+        else if(type === "calendario") renderCalendarChannel(content, data);
+        else content.innerHTML = `<p>Tipo de canal desconhecido</p>`;
+    }
+
+    function renderError(msg) {
+        const main = document.querySelector(".project-main");
+        if (!main) return;
+        let content = main.querySelector("#channel-content");
+        if (!content) {
+            content = document.createElement("div");
+            content.id = "channel-content";
+            main.appendChild(content);
+        }
+        content.innerHTML = `<div class="error-block">${escapeHtml(msg)}</div>`;
+    }
+
+    function renderTextChannel(container, data) {
+        const html = `
+        <div class="chat-messages">
+            ${data.messages.map(msg => `
+                <div class="message">
+                    <span class="author">${msg.author}:</span>
+                    <span class="content">${msg.content}</span>
+                </div>
+            `).join('')}
+        </div>
+
+        <div class="chat-input-container">
+            <input id="chat-input" class="chat-input" placeholder="Escreve uma mensagem..." onkeypress="sendMessage(event)">
+        </div>
+        `;
+        container.innerHTML = html;
+    }
+
+    function renderTaskChannel(container, data) {
+        container.innerHTML = ""; // limpa tudo antes
+        const tasks = data.tasks || data.tarefas || [];
+
+        // Botão de criar nova tarefa
+        const createBtn = document.createElement("div");
+        createBtn.className = "empty-block";
+        createBtn.innerHTML = `
+        <button style="
+            padding: 8px 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        " onclick="openCreateTaskModal()">+ Criar Tarefa</button>`;
+        container.appendChild(createBtn);
+
+        if (tasks.length > 0) {
+            const taskList = document.createElement("div");
+            taskList.className = "task-list";
+            taskList.style.display = "grid";
+            taskList.style.gridTemplateColumns = "repeat(auto-fit, minmax(250px, 1fr))";
+            taskList.style.gap = "12px";
+            taskList.style.marginTop = "16px";
+
+            tasks.forEach(t => {
+                const taskCard = document.createElement("div");
+                taskCard.className = "task-card";
+                taskCard.style.padding = "12px";
+                taskCard.style.borderRadius = "10px";
+                taskCard.style.boxShadow = "0 2px 6px rgba(0,0,0,0.15)";
+                taskCard.style.backgroundColor = t.color || "#fefefe";
+                taskCard.style.cursor = "pointer";
+                taskCard.style.transition = "transform 0.2s, box-shadow 0.2s";
+                taskCard.onmouseover = () => {
+                    taskCard.style.transform = "translateY(-2px)";
+                    taskCard.style.boxShadow = "0 4px 12px rgba(0,0,0,0.25)";
+                };
+                taskCard.onmouseout = () => {
+                    taskCard.style.transform = "translateY(0)";
+                    taskCard.style.boxShadow = "0 2px 6px rgba(0,0,0,0.15)";
+                };
+
+                let statusIcon = "";
+                const deadlineDate = new Date(t.deadline);
+                const now = new Date();
+
+                if (t.completed === true) {
+                    statusIcon = "✔️";
+                } else if (deadlineDate < now) {
+                    statusIcon = "❌";
+                } else {
+                    statusIcon = "⏳";
+                }
+
+                taskCard.innerHTML = `
+                <h3 style="margin:0 0 6px 0; font-size: 18px; color: #333;">${t.title}</h3>
+                <p style="margin: 4px 0;"><strong>Descrição:</strong> ${t.description || "–"}</p>
+                <p style="margin: 4px 0;"><strong>Prazo:</strong> ${t.deadline}</p>
+                <p style="margin: 4px 0;"><strong>Responsável:</strong> ${t.assignedTo}</p>
+                <p style="margin: 4px 0;"><strong>Tipo:</strong> ${t.type || "tarefa"}</p>
+                <div class="task-status-icon">${statusIcon}</div>
+            `;
+
+                taskList.appendChild(taskCard);
+            });
+
+            container.appendChild(taskList);
+        } else {
+            const emptyBlock = document.createElement("div");
+            emptyBlock.className = "empty-block";
+            emptyBlock.style.marginTop = "16px";
+            emptyBlock.style.textAlign = "center";
+            emptyBlock.style.color = "#777";
+            emptyBlock.innerHTML = `<p>Nenhuma tarefa criada ainda.</p>`;
+            container.appendChild(emptyBlock);
+        }
+    }
+
+    function openCreateTaskModal() {
+        
+        const modal = document.getElementById("create-task-modal-in-group");
+        if (!modal) return;
+
+        modal.classList.remove("hidden");
+        modal.style.display = "block";
+    }
+
+    function closeTaskModal() {
+        const modal = document.getElementById("create-task-modal-in-group");
+        if (!modal) return;
+
+        modal.classList.add("hidden");
+        modal.style.display = "none";
+    }
+
+    function renderCalendarChannel(container, data) {
+        alert("Funcionalidade de calendário ainda não implementada.");
+        /*container.innerHTML = `
+            <h2>Calendário do Projeto</h2>
+            <p>(Aqui vais colocar o calendário futuro)</p>
+        `;*/
+    }
+
+    /*function sendMessage(e) {
+        if (e.key !== "Enter") return;
+
+        const input = document.getElementById("chat-input");
+        const text = input.value.trim();
+        if (!text) return;
+
+        const msgObj = { author: "Tu", text };
+        channelMessages[currentChannel].push(msgObj);
+        loadMessages();
+        input.value = "";
+    }*/
+
+    function addChannelToSidebar(type, channel) {
+        const list = document.querySelector(`ul.channel-list:nth-of-type(${getListIndex(type)})`);
+        console.log("Adicionando canal à sidebar:", type, channel, list);
+        if (!list) return;
+
+        const li = document.createElement("li");
+        li.className = "channel-item";
+        li.innerHTML = `
+            <span onclick="openChannel('${type}', '${channel.id}', '${channel.name}')">#${channel.name}</span>
+            <button class="delete-channel" onclick="deleteChannel('${channel.id}')">×</button>
+        `;
+
+        list.appendChild(li);
+    }
+
+    function getListIndex(type) {
+        if (type === "texto") return 1;
+        if (type === "grupos") return 2;
+        if (type === "tarefas") return 3;
+        if (type === "calendario") return 4;
+    }
+
+</script>

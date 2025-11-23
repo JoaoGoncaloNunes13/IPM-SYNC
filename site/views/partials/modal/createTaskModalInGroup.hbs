@@ -1,0 +1,71 @@
+<div id="create-task-modal-in-group" class="modal hidden">
+    <div class="modal-content">
+        <h2>Criar Tarefa</h2>
+
+        <label>Título:</label>
+        <input id="task-title" type="text">
+
+        <label>Descrição:</label>
+        <textarea id="task-desc"></textarea>
+
+        <label>Data Limite:</label>
+        <input id="task-deadline" type="date">
+
+        <label>Responsável:</label>
+        <select id="task-assigned">
+            {{#each group.members}}
+               
+                <option value="{{this.id}}">{{this.name}}</option>
+            {{/each}}
+        </select>
+
+        <div class="modal-buttons">
+            <button onclick="closeTaskModal()">Cancelar</button>
+            <button onclick="submitNewTask()">Criar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openCreateTaskModal() {
+        document.getElementById("create-task-modal-in-group").classList.remove("hidden");
+    }
+
+    function closeTaskModal() {
+        document.getElementById("create-task-modal-in-group").classList.add("hidden");
+    }
+
+    async function submitNewTask() {
+        const title = document.getElementById("task-title").value.trim();
+        const desc = document.getElementById("task-desc").value.trim();
+        const deadline = document.getElementById("task-deadline").value;
+        const assignedTo = document.getElementById("task-assigned").value;
+        const currentChannel = window.currentTaskChannelInGroup
+
+        if (!title || !deadline || !assignedTo) {
+            alert("Título, data e responsável são obrigatórios");
+            return;
+        }
+
+        const today = new Date().toISOString().split('T')[0];
+        if (deadline < today) {
+            alert("Data limite não pode ser anterior à data atual");
+            return;
+        }
+
+        console.log({ title, desc, deadline, assignedTo });
+
+        const res = await fetch(`/servers/${window.SERVER_ID}/grupos/${window.SERVER_CHANNEL_ID}/${window.GROUP_ID}/tarefas/${currentChannel}`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ title, description: desc, deadline, assignedTo })
+        });
+
+        if (!res.ok) return alert("Erro ao criar tarefa");
+
+        const task = await res.json();
+        renderChannel('tarefas', task);
+        closeTaskModal();
+    }
+
+</script>

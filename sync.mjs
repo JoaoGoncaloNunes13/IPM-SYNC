@@ -37,6 +37,7 @@ app.use(session({
     saveUninitialized: true
 }));
 
+
 app.use((req, res, next) => {
     req.session.count = (req.session.count || 0) + 1;
     next();
