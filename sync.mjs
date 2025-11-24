@@ -16,7 +16,7 @@ import serverRoutes from './routes/servers.mjs';
 import helpRoutes from './routes/help.mjs';
 import canaisRoutes from './routes/canais.mjs';
 
-const PORT = process.env.PORT || 1906;
+const PORT = 1906;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
