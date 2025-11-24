@@ -4,7 +4,7 @@
   "description": "",
   "main": "sync.mjs",
   "scripts": {
-    "start": "nodemon sync.mjs"
+  "start": "node sync.mjs"
   },
   "keywords": [],
   "author": "",
