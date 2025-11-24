@@ -33,6 +33,7 @@ export function initializeData() {
         {id: randomUUID(), name: "Paulo Pereira", email: "paulo@gmail.com", password: "1234",calendar: []},
         {id: randomUUID(), name: "Catia Vaz", email: "catia@gmail.com", password: "1234",calendar: []},
         {id: randomUUID(), name: "Matilde Pato", email: "matilde@gmail.com", password: "1234",calendar: []},
+        {id: randomUUID(), name: "Ana Alves", email: "ana@gmail.com", password: "1234",calendar: []},
         {id: randomUUID(), name: "Maria Gomes", email: "maria@gmail.com", password: "1234",calendar: []},
         {id: randomUUID(), name: "Gustavo Lima", email: "gustavo@gmail.com", password: "1234",calendar: []},
     ];
