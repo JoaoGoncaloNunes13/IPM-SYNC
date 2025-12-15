@@ -394,7 +394,8 @@ export async function createChannel(serverId, type, name) {
     if (!server) throw new Error("Servidor não encontrado.");
     if (!server.channels[type]) throw new Error("Tipo de canal inválido.");
 
-    const nextId = server.channels[type].length;
+    //const nextId = server.channels[type].length;
+    const nextId = server.channels[type].reduce((maxId, channel) => Math.max(maxId, channel.id), -1) + 1;
     let channel = null;
     if (type === 'texto') {
         channel = { id: nextId, name, messages: [] };
@@ -703,6 +704,30 @@ export async function addMessageToTextChannelInGroup(serverId, channelId , group
     groupChannel.messages.push(newMessage);
     console.log(`Canal de texto ${channelIdInGroup} do grupo ${groupId} agora tem mensagens:`, groupChannel.messages);
     return newMessage;
+}
+
+export function deleteChannel(serverId, type, channelId) {
+    const server = servers.find(s => s.id === serverId);
+    if (!server) throw new Error("Servidor não encontrado.");
+    const channelIndex = server.channels[type].findIndex(c => c.id === channelId);
+    if (channelIndex === -1) throw new Error("Canal não encontrado.");
+    server.channels[type].splice(channelIndex, 1);
+    console.log(`Canal ${channelId} do tipo ${type} foi eliminado do servidor ${serverId}.`);
+    return true;
+}
+
+export function deleteChannelInGroup(serverId, channelId, groupId, type, channelIdInGroup) {
+    const server = servers.find(s => s.id === serverId);
+    if (!server) throw new Error("Servidor não encontrado.");
+    const channel = server.channels.grupos.find(c => c.id === channelId);
+    if (!channel) throw new Error("Canal de grupos não encontrado.");
+    const group = channel.groups.find(g => g.id === groupId);
+    if (!group) throw new Error("Grupo não encontrado.");
+    const groupChannelIndex = group.channels[type].findIndex(c => c.id === channelIdInGroup);
+    if (groupChannelIndex === -1) throw new Error("Canal do grupo não encontrado.");
+    group.channels[type].splice(groupChannelIndex, 1);
+    console.log(`Canal ${channelIdInGroup} do tipo ${type} foi eliminado do grupo ${groupId} no servidor ${serverId}.`);
+    return true;
 }
 
 

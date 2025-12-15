@@ -8,7 +8,7 @@
             {{#each project.channels.texto}}
                 <li class="channel-item">
                     <span onclick="openChannel('texto', '{{this.id}}', '{{this.name}}')">#{{this.name}}</span>
-                    <button class="delete-channel" onclick="deleteChannel('{{this.id}}')">×</button>
+                    <button class="delete-channel" onclick="deleteChannel('{{this.id}}', 'texto')">×</button>
                 </li>
             {{/each}}
         </ul>
@@ -18,7 +18,7 @@
             {{#each project.channels.grupos}}
                 <li class="channel-item">
                     <span onclick="openChannel('grupos', '{{this.id}}', '{{this.name}}')">#{{this.name}}</span>
-                    <button class="delete-channel" onclick="deleteChannel('{{this.id}}')">×</button>
+                    <button class="delete-channel" onclick="deleteChannel('{{this.id}}', 'grupos')">×</button>
                 </li>
             {{/each}}
         </ul>
@@ -28,7 +28,7 @@
             {{#each project.channels.tarefas}}
                 <li class="channel-item">
                     <span onclick="openChannel('tarefas', '{{this.id}}')">#{{this.name}}</span>
-                    <button class="delete-channel" onclick="deleteChannel('{{this.id}}')">×</button>
+                    <button class="delete-channel" onclick="deleteChannel('{{this.id}}', 'tarefas')">×</button>
                 </li>
             {{/each}}
         </ul>
@@ -38,7 +38,7 @@
             {{#each project.channels.calendario}}
                 <li class="channel-item">
                     <span onclick="openChannel('calendario', '{{this.id}}')">#{{this.name}}</span>
-                    <button class="delete-channel" onclick="deleteChannel('{{this.id}}')">×</button>
+                    <button class="delete-channel" onclick="deleteChannel('{{this.id}}', 'calendario')">×</button>
                 </li>
             {{/each}}
         </ul>
@@ -526,7 +526,7 @@
         li.className = "channel-item";
         li.innerHTML = `
             <span onclick="openChannel('${type}', '${channel.id}', '${channel.name}')">#${channel.name}</span>
-            <button class="delete-channel" onclick="deleteChannel('${channel.id}')">×</button>
+            <button class="delete-channel" onclick="deleteChannel('${channel.id}', '${type}')">×</button>
         `;
 
         list.appendChild(li);
@@ -537,6 +537,32 @@
         if (type === "grupos") return 2;
         if (type === "tarefas") return 3;
         if (type === "calendario") return 4;
+    }
+
+    async function deleteChannel(channelId, type) {
+        const res = await fetch(`/servers/${window.SERVER_ID}/channels/${type}/${channelId}`, {
+            method: "DELETE"
+        });
+
+        if (!res.ok) {
+            alert("Erro ao deletar canal.");
+            return;
+        }
+
+        // Remover da sidebar
+        const buttons = document.querySelectorAll(".delete-channel");
+        buttons.forEach(btn => {
+            if (btn.getAttribute("onclick").includes(`'${channelId}'`)) {
+                const li = btn.parentElement;
+                if (li) li.remove();
+            }
+        });
+
+        // Limpar canal se estiver aberto
+        const currentChannelEl = document.getElementById("current-channel");
+        if (currentChannelEl && currentChannelEl.innerText.includes(channelId)) {
+            renderError("Canal deletado.");
+        }
     }
 </script>
 

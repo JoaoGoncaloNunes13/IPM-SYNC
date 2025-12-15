@@ -45,6 +45,18 @@ router.post("/createServer", async (req, res) => {
     }
 });
 
+router.delete("/servers/:serverId/channels/:type/:channelId", async (req, res) => {
+    const serverId = parseInt(req.params.serverId);
+    const channelId = parseInt(req.params.channelId);
+    const type = req.params.type;
+    try {
+        await data.deleteChannel(serverId, type, channelId);
+        res.status(200).json({ message: "Canal deletado com sucesso" });
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+});
+
 
 
 export default router;
