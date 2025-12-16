@@ -8,7 +8,7 @@
             {{#each group.channels.texto}}
                 <li class="channel-item">
                     <span onclick="openChannel('texto', '{{this.id}}', '{{this.name}}')">#{{this.name}}</span>
-                    <button class="delete-channel" onclick="deleteChannel('{{this.id}}')">×</button>
+                    <button class="delete-channel" onclick="deleteChannelInGroup('{{this.id}}', 'texto')">×</button>
                 </li>
             {{/each}}
         </ul>
@@ -18,7 +18,7 @@
             {{#each group.channels.tarefas}}
                 <li class="channel-item">
                     <span onclick="openChannel('tarefas', '{{this.id}}', '{{this.name}}')">#{{this.name}}</span>
-                    <button class="delete-channel" onclick="deleteChannel('{{this.id}}')">×</button>
+                    <button class="delete-channel" onclick="deleteChannelInGroup('{{this.id}}', 'tarefas')">×</button>
                 </li>
             {{/each}}
         </ul>
@@ -28,7 +28,7 @@
             {{#each group.channels.calendario}}
                 <li class="channel-item">
                     <span onclick="openChannel('calendario', '{{this.id}}', '{{this.name}}')">#{{this.name}}</span>
-                    <button class="delete-channel" onclick="deleteChannel('{{this.id}}')">×</button>
+                    <button class="delete-channel" onclick="deleteChannelInGroup('{{this.id}}', 'calendario')">×</button>
                 </li>
             {{/each}}
         </ul>
@@ -386,7 +386,7 @@
         li.className = "channel-item";
         li.innerHTML = `
             <span onclick="openChannel('${type}', '${channel.id}', '${channel.name}')">#${channel.name}</span>
-            <button class="delete-channel" onclick="deleteChannel('${channel.id}')">×</button>
+            <button class="delete-channel" onclick="deleteChannelInGroup('${channel.id}', '${type}')">×</button>
         `;
 
         list.appendChild(li);
@@ -397,6 +397,38 @@
         if (type === "grupos") return 2;
         if (type === "tarefas") return 3;
         if (type === "calendario") return 4;
+    }
+
+    async function deleteChannelInGroup(channelId, type) {  
+        const res = await fetch(`/servers/${window.SERVER_ID}/grupos/${window.SERVER_CHANNEL_ID}/${window.GROUP_ID}/channels/${type}/${channelId}`, {
+            method: "DELETE"
+        });
+
+        if (!res.ok) {
+            alert("Erro ao deletar canal.");
+            return;
+        }
+
+        // Remover canal da sidebar
+        const list = document.querySelector(`ul.channel-list:nth-of-type(${getListIndex(type)})`);
+        if (!list) return;
+
+        const channelItems = list.querySelectorAll(".channel-item");
+        channelItems.forEach(item => {
+            const span = item.querySelector("span");
+            if (span && span.onclick.toString().includes(`openChannel('${type}', '${channelId}'`)) {
+                list.removeChild(item);
+            }
+        });
+
+        // Se o canal deletado estiver aberto, limpar a área principal
+        const currentEl = document.getElementById("current-channel");
+        if (currentEl && currentEl.innerText.includes(`#`) && window[`current${type.charAt(0).toUpperCase() + type.slice(1)}Channel`] == channelId) {
+            const main = document.querySelector(".project-main");
+            const content = main.querySelector("#channel-content");
+            if (content) content.innerHTML = `<p>Canal deletado.</p>`;
+            currentEl.innerText = "Bem vindo";
+        }
     }
 
 </script>

@@ -550,18 +550,34 @@
         }
 
         // Remover da sidebar
-        const buttons = document.querySelectorAll(".delete-channel");
-        buttons.forEach(btn => {
-            if (btn.getAttribute("onclick").includes(`'${channelId}'`)) {
-                const li = btn.parentElement;
-                if (li) li.remove();
+        const list = document.querySelector(`ul.channel-list:nth-of-type(${getListIndex(type)})`);
+        if (!list) return;
+        const items = list.querySelectorAll("li.channel-item");
+        items.forEach(item => {
+            const span = item.querySelector("span");
+            if (span && span.getAttribute("onclick").includes(`'${channelId}'`)) {
+                list.removeChild(item);
             }
         });
 
-        // Limpar canal se estiver aberto
-        const currentChannelEl = document.getElementById("current-channel");
-        if (currentChannelEl && currentChannelEl.innerText.includes(channelId)) {
-            renderError("Canal deletado.");
+        // Limpar área principal se o canal deletado estava aberto
+        let currentChannelId = null;
+        if (type === "texto") currentChannelId = window.currentTextChannel;
+        if (type === "tarefas") currentChannelId = window.currentTaskChannel;
+        if (type === "grupos") currentChannelId = window.currentGroupsChannel;
+        if (currentChannelId == channelId) {
+            const main = document.querySelector(".project-main");
+            if (!main) return;
+            let content = main.querySelector("#channel-content");
+            if (content) content.innerHTML = `<p>Canal deletado.</p>`;
+
+            const currentEl = ensureChatHeader();
+            if (currentEl) currentEl.innerText = "Bem vindo";
+
+            // Limpa variáveis globais
+            if (type === "texto") window.currentTextChannel = null;
+            if (type === "tarefas") window.currentTaskChannel = null;
+            if (type === "grupos") window.currentGroupsChannel = null;
         }
     }
 </script>

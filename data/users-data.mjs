@@ -532,7 +532,7 @@ export async function createReminder(userId, title, date) {
 
 export async function loginUser(email, password) {
     const user = users.find(u => u.email === email && u.password === password);
-    if (!user) throw new Error("Credenciais inválidas");
+    if (!user) throw new Error("Email ou palavra-passe incorretos");
     return user;
 }
 
@@ -615,7 +615,7 @@ export async function createChannelInGroup(serverId, channelId, groupId, type, n
     if (!channel) throw new Error("Canal de grupos não encontrado.");
     const group = channel.groups.find(g => g.id === groupId);
     if (!group) throw new Error("Grupo não encontrado.");
-    const nextId = group.channels[type].length;
+    const nextId = group.channels[type].reduce((maxId, channel) => Math.max(maxId, channel.id), -1) + 1;
     let newChannel = null;
     if (type === 'texto') {
         newChannel = { id: nextId, name, messages: [] };

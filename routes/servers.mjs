@@ -57,6 +57,20 @@ router.delete("/servers/:serverId/channels/:type/:channelId", async (req, res) =
     }
 });
 
+router.delete("/servers/:serverId/grupos/:serverChannelId/:groupId/channels/:type/:channelId", async (req, res) => {
+    const serverId = parseInt(req.params.serverId);
+    const serverChannelId = parseInt(req.params.serverChannelId);
+    const groupId = parseInt(req.params.groupId);
+    const channelId = parseInt(req.params.channelId);
+    const type = req.params.type;
+    try {
+        await data.deleteChannelInGroup(serverId, serverChannelId, groupId, type, channelId);
+        res.status(200).json({ message: "Canal do grupo deletado com sucesso" });
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+});
+
 
 
 export default router;
